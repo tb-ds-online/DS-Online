@@ -1,5 +1,5 @@
 """
-API con Flask — predicción de supervivencia del Titanic.
+API REST con Flask — predicción de supervivencia del Titanic.
 """
 from flask import Flask, request, jsonify
 import joblib
@@ -17,6 +17,7 @@ def home():
         "mensaje": "API de predicción de supervivencia del Titanic",
         "endpoints": {
             "/predict": "POST con JSON {Pclass, Sex, Age, Fare} -> devuelve la predicción",
+            "/predict_get": "GET con query string ?Pclass=1&Sex=female&Age=29&Fare=100 -> devuelve la predicción",
         },
     })
 
@@ -24,10 +25,27 @@ def home():
 @app.route("/predict", methods=["POST"])
 def predict():
     data = request.get_json()
+    return _predecir(data)
 
+
+@app.route("/predict_get", methods=["GET"])
+def predict_get():
+    # En un GET no hay body de JSON — los datos van en la query string:
+    # /predict_get?Pclass=1&Sex=female&Age=29&Fare=100
+    # request.args es un diccionario de solo lectura con esos parámetros.
+    data = {
+        "Pclass": request.args.get("Pclass"),
+        "Sex": request.args.get("Sex"),
+        "Age": request.args.get("Age"),
+        "Fare": request.args.get("Fare"),
+    }
+    return _predecir(data)
+
+
+def _predecir(data):
     # Validación manual: hay que comprobar cada campo a mano
     campos_requeridos = ["Pclass", "Sex", "Age", "Fare"]
-    faltantes = [c for c in campos_requeridos if c not in (data or {})]
+    faltantes = [c for c in campos_requeridos if not (data or {}).get(c)]
     if faltantes:
         return jsonify({"error": f"Faltan campos: {faltantes}"}), 400
 

@@ -6,8 +6,11 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.ensemble import RandomForestClassifier
 import joblib
+import os
 
-df = pd.read_csv("titanic_train.csv")
+pwd = os.path.dirname(os.path.abspath(__file__))
+df = pd.read_csv(os.path.join(pwd, "titanic_train.csv"))
+
 features = ["Pclass", "Sex", "Age", "Fare"]
 X, y = df[features], df["Survived"]
 
@@ -19,6 +22,10 @@ preprocessing = ColumnTransformer([
 pipeline = Pipeline([("preprocesado", preprocessing), ("modelo", RandomForestClassifier(random_state=42))])
 pipeline.fit(X, y)
 
-joblib.dump(pipeline, "modelo_titanic.joblib")
-print("Modelo entrenado y guardado.")
+ruta_salida = os.path.join(pwd, "modelo_titanic.joblib")
+joblib.dump(pipeline, ruta_salida)
+
+print(f"Modelo guardado en: {ruta_salida}")
 print("Ejemplo de predicción:", pipeline.predict(pd.DataFrame([{"Pclass": 1, "Sex": "female", "Age": 29, "Fare": 100}])))
+
+

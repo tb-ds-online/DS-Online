@@ -1,7 +1,7 @@
 """
-API con FastAPI — predicción de supervivencia del Titanic.
+API REST con FastAPI — predicción de supervivencia del Titanic.
 """
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from pydantic import BaseModel, Field
 from typing import Literal
 import joblib
@@ -14,7 +14,7 @@ modelo = joblib.load(os.path.join(pwd, "modelo_titanic.joblib"))
 
 
 class Pasajero(BaseModel):
-    Pclass: Literal[1, 2, 3] = Field(description="Clase del billete: 1, 2 o 3")
+    Pclass: int = Field(ge=1, le=3, description="Clase del billete: 1, 2 o 3")
     Sex: Literal["male", "female"]
     Age: float = Field(gt=0, le=120, description="Edad en años")
     Fare: float = Field(ge=0, description="Tarifa pagada")
@@ -29,15 +29,26 @@ class Prediccion(BaseModel):
 def home():
     return {
         "mensaje": "API de predicción de supervivencia del Titanic",
-        "endpoints": {"/predict": "POST -> devuelve la predicción", "/docs": "documentación interactiva"},
+        "endpoints": {
+            "/predict": "POST con JSON en el body --- devuelve la predicción",
+            "/predict_get": "GET con query string ?Pclass=1&Sex=female&Age=29&Fare=100 --- devuelve la predicción",
+            "/docs": "documentación interactiva",
+        },
     }
 
 
 @app.post("/predict", response_model=Prediccion)
 def predict(pasajero: Pasajero):
-    # Nada de validación manual: si los datos no cumplen el esquema de arriba,
-    # FastAPI ya ha rechazado la petición antes de que este código se ejecute.
     X = pd.DataFrame([pasajero.model_dump()])
     prediccion = int(modelo.predict(X)[0])
     probabilidad = float(modelo.predict_proba(X)[0][1])
     return Prediccion(survived=prediccion, probabilidad_supervivencia=round(probabilidad, 3))
+
+
+@app.get("/predict_get", response_model=Prediccion)
+def predict_get(pasajero: Pasajero = Depends()):
+    X = pd.DataFrame([pasajero.model_dump()])
+    prediccion = int(modelo.predict(X)[0])
+    probabilidad = float(modelo.predict_proba(X)[0][1])
+    return Prediccion(survived=prediccion, probabilidad_supervivencia=round(probabilidad, 3))
+
