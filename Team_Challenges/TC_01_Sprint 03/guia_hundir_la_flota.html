@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hundir la flota · Guía del equipo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --bg:#FAF9F8;--panel:#FFFFFF;--ink:#121212;--muted:#5D5758;--line:#E3DEDD;--soft:#F2EEED;
+  --red:#E0202D;--red-soft:#FDE8EA;--on-red:#FFFFFF;--code:#17181C;--code-fg:#F2EFEE;--cover:#121212;--on-cover:#F5F2F1;
+  --kw:#FF7B85;--str:#F3C98B;--com:#8E9199;--fn:#8FCBFF;--ok:#14733F;--ok-soft:#E2F4EA;--bad:#B3261E;--bad-soft:#FBE7E5;--warn:#8A5A00;--warn-soft:#FBF0D5;
+  --display:"Archivo","Arial Black",system-ui,sans-serif;--body:"Source Sans 3",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141315;--panel:#1E1C1F;--ink:#F4F1F0;--muted:#B3ACAD;--line:#353134;--soft:#28252A;
+  --red:#FF5A66;--red-soft:#3A1B20;--on-red:#121212;--code:#0E0E11;--cover:#0C0C0E;
+  --ok:#6BD79B;--ok-soft:#183126;--bad:#FF8A80;--bad-soft:#3A1E1C;--warn:#F0C566;--warn-soft:#352A12;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141315;--panel:#1E1C1F;--ink:#F4F1F0;--muted:#B3ACAD;--line:#353134;--soft:#28252A;
+  --red:#FF5A66;--red-soft:#3A1B20;--on-red:#121212;--code:#0E0E11;--cover:#0C0C0E;
+  --ok:#6BD79B;--ok-soft:#183126;--bad:#FF8A80;--bad-soft:#3A1E1C;--warn:#F0C566;--warn-soft:#352A12;color-scheme:dark}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 var(--body)}
+a{color:var(--red)}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+code{font-family:var(--mono);font-size:.86em}
+:not(pre)>code{background:var(--soft);border:1px solid var(--line);padding:1px 6px;border-radius:5px}
+
+/* barra superior */
+.bar{position:sticky;top:0;z-index:20;background:var(--panel);border-bottom:1px solid var(--line)}
+.bar .in{max-width:1080px;margin:0 auto;padding:0 20px;height:56px;display:flex;align-items:center;gap:18px}
+.bar b{font:900 15px var(--display);letter-spacing:.02em;white-space:nowrap}
+.bar b span{color:var(--red)}
+.bar nav{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;margin-left:auto}
+.bar nav::-webkit-scrollbar{display:none}
+.bar nav a{color:var(--muted);text-decoration:none;font-weight:600;font-size:14px;padding:6px 10px;border-radius:6px;white-space:nowrap}
+.bar nav a:hover,.bar nav a.on{color:var(--ink);background:var(--soft)}
+.bar nav a.on{color:var(--red)}
+.theme{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px;height:32px;padding:0 10px;font:600 13px var(--body);cursor:pointer;white-space:nowrap}
+.progress{height:3px;background:transparent}.progress i{display:block;height:100%;width:0;background:var(--red)}
+
+main{max-width:1080px;margin:0 auto;padding:0 20px 80px}
+
+/* portada */
+.hero{padding:72px 0 40px;border-bottom:1px solid var(--line)}
+.eyebrow{font:700 13px var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin-bottom:12px}
+h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0 0 .45em}
+h1{font-size:clamp(44px,8vw,84px);font-weight:900;letter-spacing:-.02em}
+h2{font-size:clamp(28px,4vw,40px);font-weight:900;letter-spacing:-.01em}
+h3{font-size:20px;font-weight:700}
+.lead{font-size:21px;color:var(--muted);max-width:720px;margin:0 0 28px}
+.phases{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.phases a{display:block;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--red);border-radius:10px;padding:14px 16px}
+.phases a:hover{border-color:var(--red)}
+.phases .k{font:900 13px var(--display);color:var(--red);letter-spacing:.06em}
+.phases .t{font:700 18px var(--display);margin:2px 0 4px}
+.phases .d{font-size:14px;color:var(--muted)}
+
+/* fases */
+.phase{padding:64px 0 8px}
+.divider{background:var(--cover);color:var(--on-cover);border-radius:14px;padding:34px 34px 30px;margin-bottom:28px;position:relative;overflow:hidden}
+.divider .num{font:900 15px var(--display);letter-spacing:.14em;color:var(--red);text-transform:uppercase}
+.divider h2{color:var(--on-cover);margin:6px 0 6px}
+.divider p{margin:0;color:#BDB6B7}
+.why{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--red);border-radius:10px;padding:16px 20px;margin:0 0 24px}
+.why h3{margin-bottom:6px;font-size:18px}
+.why p{margin:0}
+
+.step{display:grid;grid-template-columns:56px minmax(0,1fr);gap:18px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:22px 24px;margin:0 0 16px}
+.step .n{width:56px;height:56px;border-radius:10px;background:var(--red);color:var(--on-red);display:grid;place-items:center;font:900 24px var(--display)}
+.step h3{margin:4px 0 6px}
+.step .sub{color:var(--muted);margin:0 0 12px}
+.step p{margin:0 0 12px}
+.step ol,.step ul{margin:0 0 12px;padding-left:22px}
+.step li{margin:3px 0}
+.step>div>*:last-child{margin-bottom:0}
+
+.note{border-radius:8px;padding:12px 16px;margin:12px 0;font-size:16px}
+.note.ok{background:var(--ok-soft);border-left:4px solid var(--ok)}
+.note.warn{background:var(--warn-soft);border-left:4px solid var(--warn)}
+.note.red{background:var(--red-soft);border-left:4px solid var(--red)}
+.note b{font-weight:700}
+
+/* código */
+.code{position:relative;background:var(--code);color:var(--code-fg);border-radius:9px;margin:10px 0 14px}
+.code pre{margin:0;padding:14px 16px;overflow-x:auto;font:400 14px/1.6 var(--mono);white-space:pre}
+.code .lbl{position:absolute;left:14px;top:-9px;background:var(--red);color:#fff;font:700 11px var(--body);letter-spacing:.06em;text-transform:uppercase;padding:1px 7px;border-radius:4px}
+.code.has-lbl pre{padding-top:20px}
+.copy{position:absolute;right:8px;top:8px;background:#2A2B31;color:#E6E3E2;border:1px solid #3A3B42;border-radius:6px;font:600 12px var(--body);padding:3px 9px;cursor:pointer;opacity:.85}
+.copy:hover{opacity:1}
+.com{color:var(--com)}.kw{color:var(--kw)}.str{color:var(--str)}.fn{color:var(--fn)}
+.conf{color:#FF9E9E}.inc{color:#9EE6B8}
+
+/* tablas */
+.tbl{overflow-x:auto;margin:10px 0 14px;border:1px solid var(--line);border-radius:9px}
+table{border-collapse:collapse;width:100%;font-size:15px;background:var(--panel)}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:700 13px var(--body);letter-spacing:.04em;text-transform:uppercase;color:var(--muted);background:var(--soft)}
+tr:last-child td{border-bottom:0}
+td code{white-space:nowrap}
+
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.card{background:var(--soft);border-radius:9px;padding:14px 16px}
+.card h4{margin:0 0 6px;font:700 15px var(--display)}
+.card ul{margin:0;padding-left:20px}
+.card.bad{background:var(--bad-soft)}.card.bad h4{color:var(--bad)}
+.card.good{background:var(--ok-soft)}.card.good h4{color:var(--ok)}
+.card.bad li,.card.good li{font-family:var(--mono);font-size:14px}
+
+.order{display:grid;gap:8px;margin:0 0 24px}
+.order div{display:grid;grid-template-columns:40px 170px minmax(0,1fr);gap:12px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:10px 14px}
+.order .i{font:900 20px var(--display);color:var(--red)}
+.order code{font-size:15px;font-weight:600}
+.order span{color:var(--muted);font-size:15px}
+
+/* checklist */
+.check{list-style:none;padding:0!important;margin:0}
+.check li{margin:0!important}
+.check label{display:flex;gap:12px;align-items:flex-start;padding:9px 10px;border-radius:8px;cursor:pointer}
+.check label:hover{background:var(--soft)}
+.check input{accent-color:var(--red);width:18px;height:18px;margin-top:3px;flex:none}
+.check input:checked+span{color:var(--muted);text-decoration:line-through}
+.checkmeta{display:flex;justify-content:space-between;align-items:center;margin:4px 0 8px;font-size:14px;color:var(--muted)}
+.checkmeta button{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:6px;font:600 13px var(--body);padding:4px 10px;cursor:pointer}
+
+.final{background:var(--cover);color:var(--on-cover);border-radius:14px;padding:36px;text-align:center;margin-top:48px}
+.final h2{color:var(--on-cover)}
+.final p{color:#BDB6B7;margin:0}
+
+@media (max-width:820px){
+  .phases{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cols{grid-template-columns:minmax(0,1fr)}
+  .order div{grid-template-columns:32px minmax(0,1fr)}
+  .order span{grid-column:2}
+  .bar b{display:none}
+  .bar nav{margin-left:0}
+}
+@media (max-width:520px){
+  .step{grid-template-columns:minmax(0,1fr);padding:18px}
+  .step .n{width:44px;height:44px;font-size:20px}
+  .divider{padding:26px 22px}
+}
+@media print{
+  .bar,.copy,.theme,.checkmeta button{display:none}
+  body{background:#fff}
+  .step,.phase{break-inside:avoid-page}
+}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="in">
+    <b>HUNDIR LA FLOTA <span>·</span> Guía del equipo</b>
+    <nav aria-label="Fases">
+      <a href="#fase1">1 · Setup</a>
+      <a href="#fase2">2 · Desarrollo</a>
+      <a href="#fase3">3 · Integración</a>
+      <a href="#fase4">4 · Presentación</a>
+      <a href="#referencia">Referencia</a>
+    </nav>
+    <button class="theme" id="theme" type="button" aria-label="Cambiar tema">◐ Tema</button>
+  </div>
+  <div class="progress"><i id="prog"></i></div>
+</header>
+
+<main>
+
+<section class="hero">
+  <div class="eyebrow">The Bridge · Team Challenge · Sprint 03</div>
+  <h1>Hundir la flota</h1>
+  <p class="lead">Cómo trabajar en equipo sobre un mismo repositorio de GitHub: issues, ramas, Pull Requests, revisión y presentación. El enunciado del juego está en el notebook; aquí está el cómo.</p>
+  <div class="phases">
+    <a href="#fase1"><div class="k">FASE 1</div><div class="t">Setup inicial</div><div class="d">Repo, protección de main, roles e issues</div></a>
+    <a href="#fase2"><div class="k">FASE 2</div><div class="t">Desarrollo</div><div class="d">Commits, docstrings y el ciclo diario</div></a>
+    <a href="#fase3"><div class="k">FASE 3</div><div class="t">Integración</div><div class="d">Pull Requests, revisión, merge y conflictos</div></a>
+    <a href="#fase4"><div class="k">FASE 4</div><div class="t">Presentación</div><div class="d">10 minutos, checklist y demo</div></a>
+  </div>
+  <div class="note red" style="margin-top:22px"><b>Seguid el orden.</b> Cada fase depende de la anterior y cada paso trae los comandos listos para copiar.</div>
+</section>
+
+<!-- ================= FASE 1 ================= -->
+<section class="phase" id="fase1">
+  <div class="divider">
+    <div class="num">Fase 1 de 4</div>
+    <h2>Setup inicial</h2>
+    <p>Repositorio · Protección de main · Roles · Issues</p>
+  </div>
+
+  <div class="why">
+    <h3>¿Por qué empezar por aquí?</h3>
+    <p>Todo lo que construyáis se apoya en esta base. Un repositorio mal configurado acaba en conflictos, trabajo perdido y commits directos sobre <code>main</code> que cuesta mucho deshacer. Dedicadle 20 minutos al principio y os ahorraréis horas después.</p>
+  </div>
+
+  <article class="step">
+    <div class="n">1</div>
+    <div>
+      <h3>Crear el repositorio en GitHub</h3>
+      <p class="sub">Lo hace una persona del equipo (el Scrum Master). El resto espera hasta el paso 4.</p>
+      <ol>
+        <li>En GitHub, botón verde <b>New repository</b>.</li>
+        <li>Nombre: <code>hundir-la-flota</code>.</li>
+        <li>Visibility: <b>Public</b>, para que los profes podamos verlo.</li>
+        <li>Marcad <b>Add a README file</b>.</li>
+        <li>En <b>Add .gitignore</b>, elegid la plantilla <b>Python</b>.</li>
+        <li>Sin licencia.</li>
+      </ol>
+      <p>Una vez creado, copiad la URL del repo (botón verde <b>Code</b> → HTTPS).</p>
+    </div>
+  </article>
+
+  <article class="step">
+    <div class="n">2</div>
+    <div>
+      <h3>Añadir colaboradores</h3>
+      <p class="sub">Todos tienen que tener acceso antes de clonar.</p>
+      <ol>
+        <li><b>Settings → Collaborators → Add people</b>.</li>
+        <li>Buscad a cada compañero por su usuario de GitHub.</li>
+        <li>Cada uno acepta la invitación que le llega por email.</li>
+        <li>Comprobad que todos aparecen en la lista de colaboradores. En un repo personal, ser colaborador ya da permiso para hacer push.</li>
+      </ol>
+    </div>
+  </article>
+
+  <article class="step">
+    <div class="n">3</div>
+    <div>
+      <h3>Proteger la rama main y configurar los merges</h3>
+      <p class="sub">Esto es lo que os hace trabajar como un equipo de verdad. Sin protección, cualquiera puede subir código roto directamente a main.</p>
+      <p><b>Settings → Rules → Rulesets → New ruleset → New branch ruleset</b>:</p>
+      <ol>
+        <li>Ruleset name: <code>proteger-main</code>.</li>
+        <li>Enforcement status: <b>Active</b>.</li>
+        <li>Target branches: <b>Add target → Include default branch</b>.</li>
+        <li>Activad:
+          <ul>
+            <li><b>Require a pull request before merging</b>, con <b>Required approvals: 1</b> (otra persona del grupo tiene que aprobar).</li>
+            <li><b>Dismiss stale pull request approvals when new commits are pushed</b>: si se suben commits nuevos, hay que volver a aprobar.</li>
+            <li><b>Block force pushes</b>.</li>
+          </ul>
+        </li>
+      </ol>
+      <p>Después, en <b>Settings → General → Pull Requests</b>:</p>
+      <ul>
+        <li>Dejad marcado solo <b>Allow merge commits</b> y desmarcad squash y rebase. Así nadie elige otra opción sin querer.</li>
+        <li>Marcad <b>Automatically delete head branches</b>: la rama se borra de GitHub al mergear el PR.</li>
+      </ul>
+      <div class="note ok"><b>Resultado esperado:</b> si alguien hace <code>git push origin main</code>, GitHub lo rechaza con un error. Es justo lo que queremos.</div>
+    </div>
+  </article>
+
+  <article class="step">
+    <div class="n">4</div>
+    <div>
+      <h3>Clonar el repositorio</h3>
+      <p class="sub">Cada integrante clona el repo en su ordenador.</p>
+      <div class="code"><pre>git clone https://github.com/usuario/hundir-la-flota.git
+cd hundir-la-flota</pre></div>
+    </div>
+  </article>
+
+  <article class="step">
+    <div class="n">5</div>
+    <div>
+      <h3>Repartir el trabajo</h3>
+      <p class="sub">Cada persona se encarga de un módulo. El reparto depende del tamaño del grupo.</p>
+      <div class="cols">
+        <div>
+          <h3 style="font-size:16px">Grupos de 3</h3>
+          <div class="tbl"><table>
+            <tr><th>Rol</th><th>Se encarga de</th></tr>
+            <tr><td><b>Scrum Master</b></td><td><code>variables.py</code>, <code>README.md</code>, <code>requirements.txt</code> y coordinar al equipo</td></tr>
+            <tr><td><b>Dev 1</b></td><td><code>clases.py</code>: la clase <code>Tablero</code></td></tr>
+            <tr><td><b>Dev 2</b></td><td><code>funciones.py</code> y <code>main.py</code></td></tr>
+          </table></div>
+        </div>
+        <div>
+          <h3 style="font-size:16px">Grupos de 4</h3>
+          <div class="tbl"><table>
+            <tr><th>Rol</th><th>Se encarga de</th></tr>
+            <tr><td><b>Scrum Master</b></td><td><code>variables.py</code>, <code>README.md</code>, <code>requirements.txt</code> y coordinar al equipo</td></tr>
+            <tr><td><b>Dev 1</b></td><td><code>clases.py</code>: la clase <code>Tablero</code></td></tr>
+            <tr><td><b>Dev 2</b></td><td><code>funciones.py</code></td></tr>
+            <tr><td><b>Dev 3 · QA</b></td><td><code>main.py</code>, integración y probar el juego entero</td></tr>
+          </table></div>
+        </div>
+      </div>
+      <p>Que cada uno tenga su módulo no significa que trabaje solo: todos revisáis PRs de los demás y <code>main.py</code> se cierra entre todos.</p>
+    </div>
+  </article>
+
+  <article class="step">
+    <div class="n">6</div>
+    <div>
+      <h3>Crear los Issues y el tablero del proyecto</h3>
+      <p class="sub">Los Issues son las tareas. Crearlos antes de programar os obliga a pensar qué hay que hacer y permite enlazar cada PR con su tarea.</p>
+      <ol>
+        <li>En el repo: pestaña <b>Issues → New issue</b>.</li>
+        <li>Cread estos seis:</li>
+      </ol>
+      <div class="tbl"><table>
+        <tr><th>#</th><th>Título</th><th>Asignado a</th><th>Qué incluye</th></tr>
+        <tr><td>1</td><td>Definir constantes en variables.py</td><td>Scrum Master</td><td><code>TAMANO_TABLERO</code>, <code>BARCOS</code>, símbolos, mensajes</td></tr>
+        <tr><td>2</td><td>Implementar la clase Tablero</td><td>Dev 1</td><td><code>__init__</code>, <code>colocar_barcos()</code>, <code>recibir_disparo()</code>, <code>mostrar()</code></td></tr>
+        <tr><td>3</td><td>Implementar funciones.py</td><td>Dev 2</td><td>Pedir y validar coordenadas, disparo de la máquina sin repetir</td></tr>
+        <tr><td>4</td><td>Implementar main.py</td><td>Dev 2 o Dev 3</td><td>Bucle <code>while True</code>, turnos, fin de partida</td></tr>
+        <tr><td>5</td><td>README, requirements y AI_LOG</td><td>Scrum Master</td><td>Instalación, ejecución, símbolos del tablero, plantilla de <code>AI_LOG.md</code></td></tr>
+        <tr><td>6</td><td>Demo y presentación</td><td>Todos</td><td>Juego funcionando, ensayo de los 10 minutos</td></tr>
+      </table></div>
+      <ol start="3">
+        <li>Asignad cada issue a su responsable (<b>Assignees</b>).</li>
+        <li>Cread un Milestone <b>Sprint 5</b> y meted en él todos los issues.</li>
+        <li>En <b>Projects</b>, cread un tablero Kanban con las columnas <b>To Do / In Progress / In Review / Done</b>.</li>
+      </ol>
+      <div class="note warn"><b>Bugs y mejoras durante el desarrollo:</b> cread un issue nuevo para cada uno (por ejemplo, «Disparo repetido cuenta como acierto»). Así cada arreglo tiene su rama y su PR.</div>
+    </div>
+  </article>
+</section>
+
+<!-- ================= FASE 2 ================= -->
+<section class="phase" id="fase2">
+  <div class="divider">
+    <div class="num">Fase 2 de 4</div>
+    <h2>Desarrollo</h2>
+    <p>Una rama por issue · Conventional Commits · Docstrings · Ciclo diario</p>
+  </div>
+
+  <div class="why">
+    <h3>El orden de desarrollo importa</h3>
+    <p><code>variables.py</code> es la base: no se puede programar la clase sin las constantes, ni las funciones sin la clase. Este es el orden:</p>
+  </div>
+  <div class="order">
+    <div><span class="i">1</span><code>variables.py</code><span>Sin dependencias. Se empieza aquí y se mergea cuanto antes para que los demás lo tengan.</span></div>
+    <div><span class="i">2</span><code>clases.py</code><span>Importa <code>variables.py</code>. Mientras no esté mergeado, se puede avanzar con constantes provisionales.</span></div>
+    <div><span class="i">3</span><code>funciones.py</code><span>Puede ir en paralelo con el final de <code>clases.py</code>. Importa clases y variables.</span></div>
+    <div><span class="i">4</span><code>main.py</code><span>Cuando los tres anteriores funcionan. Junta todo.</span></div>
+  </div>
+
+  <article class="step">
+    <div class="n">7</div>
+    <div>
+      <h3>Una rama por issue</h3>
+      <p class="sub">Cada tarea se hace en su propia rama, que sale de un main actualizado y muere al mergear su PR.</p>
+      <div class="code"><pre><span class="com"># Partir siempre de main actualizado</span>
+git checkout main
+git pull origin main
+
+<span class="com"># Crear la rama del issue y publicarla en GitHub</span>
+git checkout -b feature/2-clase-tablero
+git push -u origin feature/2-clase-tablero</pre></div>
+      <p>Nombre de rama: <code>tipo/numero-de-issue-descripcion</code>. Por ejemplo <code>feature/1-variables</code>, <code>feature/3-funciones</code>, <code>fix/7-disparo-repetido</code> o <code>docs/5-readme</code>.</p>
+      <div class="note red"><b>Regla de oro:</b> no sigáis trabajando en una rama cuyo PR ya está mergeado. Para la siguiente tarea, volved a main, haced <code>pull</code> y cread una rama nueva. Reutilizar ramas viejas es la causa número uno de conflictos raros.</div>
+    </div>
+  </article>
+
+  <article class="step">
+    <div class="n">8</div>
+    <div>
+      <h3>Conventional Commits: el formato que vamos a usar</h3>
+      <p class="sub">Un historial de commits legible es lo que distingue un proyecto profesional de uno caótico.</p>
+      <div class="code"><pre>tipo: descripción corta en imperativo
+
+<span class="com"># Tipos</span>
+feat:      nueva funcionalidad
+fix:       corrección de un bug
+refactor:  reorganizar código sin cambiar lo que hace
+docs:      documentación (docstrings, README)
+test:      pruebas
+chore:     configuración (.gitignore, requirements.txt…)</pre></div>
+      <div class="cols">
+        <div class="card bad"><h4>✗ Así no</h4><ul><li>arreglado</li><li>cambios</li><li>wip</li><li>funciona</li><li>final final v2</li></ul></div>
+        <div class="card good"><h4>✓ Así sí</h4><ul><li>feat: añadir método recibir_disparo</li><li>fix: evitar barcos fuera del tablero</li><li>docs: añadir docstring a colocar_barcos</li><li>refactor: extraer validación de coordenadas</li><li>chore: añadir numpy a requirements.txt</li></ul></div>
+      </div>
+    </div>
+  </article>
+
+  <article class="step">
+    <div class="n">9</div>
+    <div>
+      <h3>Docstrings: documentar mientras se programa</h3>
+      <p class="sub">No lo dejéis para el final. Cada clase, método y función lleva su docstring desde que se escribe. Usamos el formato Google Style:</p>
+      <div class="code"><pre><span class="kw">class</span> <span class="fn">Tablero</span>:
+    <span class="str">"""
+    Tablero de juego de un jugador.
+
+    Attributes:
+        id_jugador (str): Identificador del jugador.
+        tamano (int): Lado del tablero (tamano x tamano).
+        tablero (np.ndarray): Barcos del jugador y disparos recibidos.
+        disparos (np.ndarray): Solo los disparos recibidos, sin barcos.
+    """</span>
+
+    <span class="kw">def</span> <span class="fn">recibir_disparo</span>(self, fila: int, columna: int) -> str:
+        <span class="str">"""
+        Procesa un disparo en la casilla (fila, columna).
+
+        Args:
+            fila (int): Fila del disparo, de 0 a 9.
+            columna (int): Columna del disparo, de 0 a 9.
+
+        Returns:
+            str: "tocado", "agua" o "repetido".
+        """</span></pre></div>
+    </div>
+  </article>
+
+  <article class="step">
+    <div class="n">10</div>
+    <div>
+      <h3>El ciclo de cada día</h3>
+      <p class="sub">Cada vez que os pongáis a trabajar, seguid este ciclo sin saltaros pasos.</p>
+      <ol>
+        <li><b>Traer lo último de main</b>, por si un compañero ha mergeado algo:</li>
+      </ol>
+      <div class="code"><pre>git checkout main
+git pull origin main</pre></div>
+      <ol start="2">
+        <li><b>Volver a vuestra rama y meterle esos cambios</b>:</li>
+      </ol>
+      <div class="code"><pre>git checkout feature/2-clase-tablero
+git merge main --no-edit
+<span class="com"># Si hay conflictos, mirad el paso 14</span></pre></div>
+      <ol start="3">
+        <li><b>Programar, añadir y hacer commit</b>, en commits pequeños:</li>
+      </ol>
+      <div class="code"><pre>git status
+git add clases.py
+git commit -m "feat: implementar colocar_barcos con orientación N/S/E/O"</pre></div>
+      <ol start="4">
+        <li><b>Subir los cambios</b>:</li>
+      </ol>
+      <div class="code"><pre>git push origin feature/2-clase-tablero</pre></div>
+      <div class="note warn"><b>¿Por qué <code>--no-edit</code>?</b> Un merge crea un commit con un mensaje automático. Sin esa opción, Git abre un editor en el terminal para que lo confirméis y muchos os quedaréis atrapados en Vim. Con <code>--no-edit</code> acepta el mensaje por defecto.</div>
+    </div>
+  </article>
+</section>
+
+<!-- ================= FASE 3 ================= -->
+<section class="phase" id="fase3">
+  <div class="divider">
+    <div class="num">Fase 3 de 4</div>
+    <h2>Integración</h2>
+    <p>Pull Requests · Code review · Merge · Conflictos</p>
+  </div>
+
+  <div class="why">
+    <h3>El ciclo completo de un Pull Request</h3>
+    <p>Es el flujo que vais a encontrar en cualquier empresa: todo lo que entra en <code>main</code> pasa por un PR revisado por otra persona. Sin excepciones.</p>
+  </div>
+
+  <article class="step">
+    <div class="n">11</div>
+    <div>
+      <h3>Abrir el Pull Request</h3>
+      <p class="sub">Cuando vuestra tarea esté lista para revisar: no tiene que ser perfecta, pero sí funcionar.</p>
+      <ol>
+        <li>En GitHub: pestaña <b>Pull requests → New pull request</b>.</li>
+        <li><b>base: main ← compare: feature/2-clase-tablero</b>.</li>
+        <li>Título: mismo formato que los commits.</li>
+        <li>Descripción: usad esta plantilla.</li>
+      </ol>
+      <div class="code has-lbl"><span class="lbl">Plantilla</span><pre>## ¿Qué hace este PR?
+Implementa la clase Tablero con __init__, colocar_barcos(), recibir_disparo() y mostrar().
+
+## Cambios
+- clases.py: clase Tablero completa
+- variables.py: añadidos los símbolos TOCADO y AGUA_DISPARADA
+
+## Cómo probarlo
+python -c "from clases import Tablero; t = Tablero('jugador'); t.colocar_barcos(); t.mostrar()"
+
+## Checklist
+- [x] El código funciona sin errores
+- [x] Docstrings en todos los métodos
+- [x] Sin print() de depuración
+- [x] Sin valores escritos a mano: todo en variables.py
+- [x] He hecho git merge main antes de abrir el PR
+
+Closes #2</pre></div>
+      <ol start="5">
+        <li><b>Assignees</b>: el autor.</li>
+        <li><b>Reviewers</b>: un compañero distinto del autor.</li>
+        <li>El <code>Closes #2</code> enlaza el PR con su issue y lo cierra al mergear.</li>
+      </ol>
+    </div>
+  </article>
+
+  <article class="step">
+    <div class="n">12</div>
+    <div>
+      <h3>Code review: cómo revisar y cómo recibir la revisión</h3>
+      <p class="sub">Quien revisa es el guardián de la calidad. Su trabajo no es aprobarlo todo, sino encontrar problemas antes de que lleguen a main.</p>
+      <div class="cols">
+        <div class="card">
+          <h4>Qué mirar al revisar</h4>
+          <ul>
+            <li>¿El código hace lo que dice el PR? Bajad la rama y probadlo.</li>
+            <li>¿Los nombres se entienden?</li>
+            <li>¿Hay números escritos a mano que deberían estar en <code>variables.py</code>?</li>
+            <li>¿Quedan <code>print()</code> de depuración?</li>
+            <li>¿Hay docstrings?</li>
+            <li>¿Qué pasa en los casos límite: coordenada fuera de rango, disparo repetido, barco en el borde?</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>Cómo responder a una revisión</h4>
+          <ul>
+            <li>Leed cada comentario con calma y sin poneros a la defensiva.</li>
+            <li>Responded a todos: o hacéis el cambio o explicáis por qué no.</li>
+            <li>Subid los arreglos a la misma rama y pedid otra revisión.</li>
+            <li>Como mínimo, una ronda de revisión antes de mergear.</li>
+          </ul>
+        </div>
+      </div>
+      <p style="margin-top:14px">Para comentar una línea: pestaña <b>Files changed</b> y clic en el <b>+</b> que aparece junto al número de línea. Comentarios concretos:</p>
+      <div class="tbl"><table>
+        <tr><th>Comentario vago</th><th>Comentario útil</th></tr>
+        <tr><td>«Esto no me gusta»</td><td>«Este 10 debería ser <code>TAMANO_TABLERO</code> de <code>variables.py</code>»</td></tr>
+        <tr><td>«No funciona»</td><td>«Con fila 10 salta un <code>IndexError</code>: falta validar el rango»</td></tr>
+        <tr><td>«Cámbialo»</td><td>«¿Y si sacamos esta comprobación a una función? Se repite en dos sitios»</td></tr>
+      </table></div>
+    </div>
+  </article>
+
+  <article class="step">
+    <div class="n">13</div>
+    <div>
+      <h3>Merge y limpieza</h3>
+      <p class="sub">Cuando el PR está aprobado, el autor lo mergea.</p>
+      <ol>
+        <li>En el PR aprobado: <b>Merge pull request → Confirm merge</b>.</li>
+        <li>GitHub borra la rama remota automáticamente (lo configurasteis en el paso 3).</li>
+        <li>En vuestro ordenador, actualizad main y borrad la rama local:</li>
+      </ol>
+      <div class="code"><pre>git checkout main
+git pull origin main
+git branch -d feature/2-clase-tablero</pre></div>
+      <p>Los demás, en cuanto vean el merge, hacen el ciclo del paso 10 para traerse esos cambios a su rama.</p>
+      <div class="note ok"><b>¿Por qué merge commit y no squash?</b> Así en main se ven todos los commits de cada persona con su autor. Es como podéis demostrar (y como podemos ver) quién ha hecho qué.</div>
+    </div>
+  </article>
+
+  <article class="step">
+    <div class="n">14</div>
+    <div>
+      <h3>Resolver conflictos</h3>
+      <p class="sub">Un conflicto aparece cuando dos personas cambian las mismas líneas. No es un error: es normal al trabajar en equipo.</p>
+      <div class="code"><pre><span class="com"># Al hacer git merge main desde vuestra rama:</span>
+CONFLICT (content): Merge conflict in variables.py
+
+<span class="com"># En el archivo aparece esto:</span>
+<span class="conf">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</span>
+TAMANO_TABLERO = 10
+=======
+TAMANO_TABLERO = 12
+<span class="inc">&gt;&gt;&gt;&gt;&gt;&gt;&gt; main</span></pre></div>
+      <ul>
+        <li>Lo de arriba (<code>HEAD</code>) es lo que hay en <b>vuestra rama</b>. VS Code lo llama <b>Current Change</b>.</li>
+        <li>Lo de abajo (<code>main</code>) es lo que viene de <b>main</b>. VS Code lo llama <b>Incoming Change</b>.</li>
+      </ul>
+      <p>Decidid qué versión vale (hablad con quien hizo el otro cambio si hace falta), dejad el archivo como debe quedar, sin las marcas <code>&lt;&lt;&lt;</code> <code>===</code> <code>&gt;&gt;&gt;</code>, y cerrad el merge:</p>
+      <div class="code"><pre>git add variables.py
+git commit --no-edit
+git push origin feature/2-clase-tablero</pre></div>
+      <div class="note warn">VS Code os enseña los conflictos con los botones <b>Accept Current Change</b>, <b>Accept Incoming Change</b> y <b>Accept Both Changes</b>. Es más cómodo que borrar las marcas a mano. Si os liais, <code>git merge --abort</code> deja la rama como estaba antes del merge.</div>
+    </div>
+  </article>
+</section>
+
+<!-- ================= FASE 4 ================= -->
+<section class="phase" id="fase4">
+  <div class="divider">
+    <div class="num">Fase 4 de 4</div>
+    <h2>Presentación</h2>
+    <p>10 minutos por grupo (aleatorio)</p>
+  </div>
+
+  <div class="why">
+    <h3>La presentación forma parte del proyecto</h3>
+    <p>La demo no es un añadido: es la prueba de que el juego funciona. Tened el código listo al menos un día antes para poder ensayar.</p>
+  </div>
+
+  <article class="step">
+    <div class="n">15</div>
+    <div>
+      <h3>Cómo repartir los 10 minutos</h3>
+      <div class="tbl"><table>
+        <tr><th>Tiempo</th><th>Bloque</th><th>Contenido</th></tr>
+        <tr><td>0:00 – 1:30</td><td><b>El equipo</b></td><td>Quiénes sois y qué ha hecho cada uno. 30 segundos por persona como máximo.</td></tr>
+        <tr><td>1:30 – 4:00</td><td><b>El repo</b></td><td>Estructura de archivos, issues, PRs mergeados, historial de commits y tablero del proyecto.</td></tr>
+        <tr><td>4:00 – 5:30</td><td><b>Código clave</b></td><td>La clase <code>Tablero</code>: <code>colocar_barcos()</code> y <code>recibir_disparo()</code>. Explicad la lógica, no leáis el código.</td></tr>
+        <tr><td>5:30 – 8:30</td><td><b>Demo</b></td><td>Partida desde el terminal: los dos tableros, un acierto, un fallo, una entrada no válida y el final.</td></tr>
+        <tr><td>8:30 – 10:00</td><td><b>Retrospectiva</b></td><td>Qué fue bien, qué costó y qué haríais diferente. Una respuesta sincera por persona.</td></tr>
+      </table></div>
+    </div>
+  </article>
+
+  <article class="step">
+    <div class="n">16</div>
+    <div>
+      <h3>Checklist del repositorio</h3>
+      <p class="sub">Revisadlo el día antes, no cinco minutos antes. Las casillas se guardan en este navegador.</p>
+      <div class="checkmeta"><span id="checkcount">0 de 12</span><button type="button" id="checkreset">Desmarcar todo</button></div>
+      <ul class="check" id="checklist">
+        <li><label><input type="checkbox"><span><code>README.md</code> con cómo instalar (<code>pip install -r requirements.txt</code>), cómo ejecutar y qué significa cada símbolo</span></label></li>
+        <li><label><input type="checkbox"><span><code>requirements.txt</code> con <code>numpy</code></span></label></li>
+        <li><label><input type="checkbox"><span><code>AI_LOG.md</code> al día</span></label></li>
+        <li><label><input type="checkbox"><span>Docstrings en todas las clases, métodos y funciones</span></label></li>
+        <li><label><input type="checkbox"><span>Sin <code>print()</code> de depuración en el código final</span></label></li>
+        <li><label><input type="checkbox"><span>Sin valores escritos a mano: las constantes, en <code>variables.py</code></span></label></li>
+        <li><label><input type="checkbox"><span>Al menos un PR mergeado por cada integrante</span></label></li>
+        <li><label><input type="checkbox"><span>Issues cerrados por sus PRs</span></label></li>
+        <li><label><input type="checkbox"><span>Tablero del proyecto actualizado, con todo en Done</span></label></li>
+        <li><label><input type="checkbox"><span><code>python main.py</code> funciona en una carpeta recién clonada</span></label></li>
+        <li><label><input type="checkbox"><span>La partida llega a victoria o derrota sin errores</span></label></li>
+        <li><label><input type="checkbox"><span>Demo ensayada y cronometrada</span></label></li>
+      </ul>
+    </div>
+  </article>
+
+  <article class="step">
+    <div class="n">17</div>
+    <div>
+      <h3>Consejos para la demo</h3>
+      <ul>
+        <li>Tened el terminal abierto en la carpeta del proyecto antes de empezar, con la letra grande.</li>
+        <li>Ejecutad <code>python main.py</code> una vez antes de presentar para comprobar que arranca.</li>
+        <li>Una partida completa es larga. Para enseñar el final en 3 minutos, preparad un tablero de demo con menos barcos: si todo está en <code>variables.py</code>, es cambiar una línea. Con <code>np.random.seed()</code> sabréis además dónde caen los barcos.</li>
+        <li>Quien habla no es quien teclea. Repartíos los papeles.</li>
+        <li>Si algo falla en directo, no os agobiéis: contad qué está pasando. Saber depurar también cuenta.</li>
+      </ul>
+      <div class="note red"><b>La idea de fondo:</b> no se trata solo de que el juego funcione, sino de demostrar que sabéis lo que habéis construido y que habéis trabajado como un equipo de verdad. El proceso (issues, PRs, revisiones) importa tanto como el resultado.</div>
+    </div>
+  </article>
+</section>
+
+<!-- ================= REFERENCIA ================= -->
+<section class="phase" id="referencia">
+  <div class="eyebrow">Referencia rápida</div>
+  <h2>Los comandos de cada día</h2>
+  <div class="tbl"><table>
+    <tr><th>Situación</th><th>Comando</th></tr>
+    <tr><td>Empezar el día</td><td><code>git checkout main</code> y <code>git pull origin main</code></td></tr>
+    <tr><td>Traer main a mi rama</td><td><code>git checkout feature/mi-rama</code> y <code>git merge main --no-edit</code></td></tr>
+    <tr><td>Empezar una tarea nueva</td><td><code>git checkout -b feature/N-descripcion</code></td></tr>
+    <tr><td>¿En qué rama estoy?</td><td><code>git branch</code></td></tr>
+    <tr><td>¿Qué he cambiado?</td><td><code>git status</code> y <code>git diff</code></td></tr>
+    <tr><td>Guardar cambios</td><td><code>git add archivo.py</code> y <code>git commit -m "feat: …"</code></td></tr>
+    <tr><td>Subir mi rama</td><td><code>git push origin feature/mi-rama</code></td></tr>
+    <tr><td>Ver el historial</td><td><code>git log --oneline --graph</code></td></tr>
+    <tr><td>Deshacer cambios sin guardar en un archivo</td><td><code>git restore archivo.py</code></td></tr>
+    <tr><td>Cancelar un merge con conflictos</td><td><code>git merge --abort</code></td></tr>
+    <tr><td>Borrar una rama ya mergeada</td><td><code>git branch -d feature/mi-rama</code></td></tr>
+  </table></div>
+
+  <div class="final">
+    <h2>¡Suerte con el reto!</h2>
+    <p>Cualquier duda, preguntadnos. El proceso importa tanto como el código.</p>
+  </div>
+</section>
+
+</main>
+
+<script>
+(function(){
+  var KEY='hlf-guia-';
+  function get(k){try{return localStorage.getItem(KEY+k)}catch(e){return null}}
+  function set(k,v){try{localStorage.setItem(KEY+k,v)}catch(e){}}
+
+  // tema
+  var root=document.documentElement, t=get('theme');
+  if(t) root.setAttribute('data-theme',t);
+  document.getElementById('theme').addEventListener('click',function(){
+    var cur=root.getAttribute('data-theme')||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+    var nx=cur==='dark'?'light':'dark'; root.setAttribute('data-theme',nx); set('theme',nx);
+  });
+
+  // copiar código
+  document.querySelectorAll('.code').forEach(function(box){
+    var b=document.createElement('button'); b.className='copy'; b.type='button'; b.textContent='Copiar';
+    b.addEventListener('click',function(){
+      var txt=box.querySelector('pre').innerText;
+      var done=function(){b.textContent='Copiado';setTimeout(function(){b.textContent='Copiar'},1400)};
+      if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done,fallback)}else fallback();
+      function fallback(){var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}ta.remove();done()}
+    });
+    box.appendChild(b);
+  });
+
+  // checklist
+  var boxes=[].slice.call(document.querySelectorAll('#checklist input'));
+  var saved=(get('check')||'').split('');
+  function count(){var n=boxes.filter(function(x){return x.checked}).length;document.getElementById('checkcount').textContent=n+' de '+boxes.length+(n===boxes.length?' · ¡listo!':'');}
+  boxes.forEach(function(x,i){x.checked=saved[i]==='1';x.addEventListener('change',function(){set('check',boxes.map(function(y){return y.checked?'1':'0'}).join(''));count()})});
+  document.getElementById('checkreset').addEventListener('click',function(){boxes.forEach(function(x){x.checked=false});set('check','');count()});
+  count();
+
+  // progreso y fase activa
+  var prog=document.getElementById('prog'), links=[].slice.call(document.querySelectorAll('.bar nav a'));
+  var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))});
+  function onScroll(){
+    var h=document.documentElement; var p=h.scrollTop/(h.scrollHeight-h.clientHeight||1);
+    prog.style.width=(Math.min(1,Math.max(0,p))*100)+'%';
+    var cur=-1; secs.forEach(function(s,i){if(s.getBoundingClientRect().top<120)cur=i});
+    links.forEach(function(a,i){a.classList.toggle('on',i===cur)});
+  }
+  addEventListener('scroll',onScroll,{passive:true}); onScroll();
+})();
+</script>
+</body>
+</html>

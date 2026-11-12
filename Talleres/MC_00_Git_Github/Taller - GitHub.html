@@ -1,0 +1,746 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Masterclass GitHub</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;900&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: deck por diapositivas al estilo de los sprints: fondo claro, acentos rojos y paneles oscuros para código y terminal. */
+:root{
+  --bg:#FAF9F8;--panel:#FFFFFF;--ink:#121212;--muted:#5D5758;--line:#E3DEDD;--soft:#F2EEED;
+  --red:#E0202D;--red-soft:#FDE8EA;--on-red:#FFFFFF;--code:#17181C;--code-fg:#F2EFEE;--cover:#121212;--on-cover:#F5F2F1;
+  --kw:#FF7B85;--str:#F3C98B;--com:#8E9199;--fn:#8FCBFF;--ok:#14733F;--ok-soft:#E2F4EA;--warn:#8A5A00;--warn-soft:#FBF0D5;
+  --display:"Archivo","Arial Black",system-ui,sans-serif;--body:"Source Sans 3",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141315;--panel:#1E1C1F;--ink:#F4F1F0;--muted:#B3ACAD;--line:#353134;--soft:#28252A;
+  --red:#FF5A66;--red-soft:#3A1B20;--on-red:#121212;--code:#0E0E11;--cover:#0C0C0E;
+  --ok:#6BD79B;--ok-soft:#183126;--warn:#F0C566;--warn-soft:#352A12;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141315;--panel:#1E1C1F;--ink:#F4F1F0;--muted:#B3ACAD;--line:#353134;--soft:#28252A;
+  --red:#FF5A66;--red-soft:#3A1B20;--on-red:#121212;--code:#0E0E11;--cover:#0C0C0E;
+  --ok:#6BD79B;--ok-soft:#183126;--warn:#F0C566;--warn-soft:#352A12;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.5 var(--body);overflow:hidden}
+.bar{height:48px;display:flex;align-items:center;gap:14px;background:var(--panel);border-bottom:1px solid var(--line);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));font-size:14px}
+.bar b{font:900 14px var(--display);letter-spacing:.02em;white-space:nowrap}
+.bar .sec{color:var(--red);font-weight:700}.bar .ttl{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.bar .pos{margin-left:auto;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.progress{height:4px;background:var(--line)}.progress i{display:block;height:100%;width:0;background:var(--red);transition:width .2s}
+.deck{height:calc(100% - 52px - 58px);position:relative}
+.slide{display:none;height:100%;overflow-y:auto;padding-block:30px 36px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.slide.on{display:block}
+.inner{max-width:1080px;margin:0 auto;display:flex;flex-direction:column;gap:18px;min-width:0}
+.cover,.divider{background:var(--cover);color:var(--on-cover)}
+.cover .inner,.divider .inner{min-height:100%;justify-content:center}
+.cover p,.divider p{color:#CFC9C8}
+.cover-logo{width:190px}
+.eyebrow{font:700 13px var(--display);letter-spacing:.09em;text-transform:uppercase;color:var(--red)}
+.cover .eyebrow,.divider .eyebrow{color:#FF7B85}
+h1,h2,h3{font-family:var(--display);margin:0;text-wrap:balance}
+h1{font-weight:900;font-size:clamp(38px,6.5vw,70px);line-height:1.02}
+h2{font-weight:900;font-size:clamp(26px,3.6vw,38px);line-height:1.1}
+h3{font-weight:700;font-size:18px;line-height:1.2}
+p{margin:0}.lead{font-size:20px;max-width:68ch}
+.num{font:900 clamp(80px,13vw,140px)/1 var(--display);color:#FF5A66}
+.chips{display:flex;flex-wrap:wrap;gap:8px}.chips span{border:1px solid #5C5758;border-radius:4px;padding:4px 10px;font-size:14px}
+.grid2,.grid3,.grid4{display:grid;gap:12px}
+.grid2{grid-template-columns:repeat(2,minmax(0,1fr))}.grid3{grid-template-columns:repeat(3,minmax(0,1fr))}.grid4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px}
+.stack{display:flex;flex-direction:column;gap:12px;min-width:0}
+.tile{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.tile .k{font:900 26px var(--display);color:var(--red)}
+.tile.ink{background:var(--red);border-color:var(--red);color:var(--on-red)}.tile.ink .k{color:var(--on-red)}
+.note{background:var(--red-soft);border-radius:6px;padding:12px 16px}
+.note b{display:block;font:700 13px var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--red);margin-bottom:2px}
+ul.clean,ol.steps{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px}
+code{font:400 .86em var(--mono);background:var(--soft);padding:1px 5px;border-radius:3px;overflow-wrap:anywhere}
+.tile.ink code{background:rgba(0,0,0,.2)}
+pre{margin:0;background:var(--code);color:var(--code-fg);border-radius:6px;padding:14px 16px;overflow-x:auto;font:400 14px/1.55 var(--mono)}
+pre .k{color:var(--kw)}pre .s{color:var(--str)}pre .c{color:var(--com)}pre .f{color:var(--fn)}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;background:var(--panel);font-size:16px}
+th{font:700 13px var(--display);text-align:left;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+th code{text-transform:none}
+th,td{padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.timeline{display:grid;grid-template-columns:30fr 70fr 30fr;gap:4px}
+.timeline div{padding:12px;color:var(--on-red);background:var(--red);border-radius:4px;min-width:0}
+.timeline div:nth-child(2){background:var(--ink);color:var(--bg)}
+.timeline strong{display:block;font:900 22px var(--display)}.timeline span{font-size:14px}
+.lvl{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.lvl .tile .k{font-size:34px}
+button,select,textarea,input{font:inherit;color:inherit}
+button{cursor:pointer;background:var(--red);color:var(--on-red);border:0;border-radius:4px;padding:8px 14px;font-weight:700}
+button.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+button:focus-visible,select:focus-visible,textarea:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+select,textarea,input[type=text]{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:6px 8px;width:100%;min-width:0}
+textarea{resize:vertical}
+pre.out{min-height:120px;max-height:280px;white-space:pre-wrap;overflow-wrap:anywhere}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.quad{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.q{border-radius:6px;padding:10px 12px;min-height:88px;display:flex;flex-direction:column;gap:3px;border:1px solid var(--line);background:var(--panel)}
+.q h3{font-size:15px}.q small{color:var(--muted);line-height:1.3}
+.q.f{background:var(--ok-soft)}.q.d{background:var(--red-soft)}.q.r{background:var(--warn-soft)}
+.pill{display:inline-block;background:var(--ink);color:var(--bg);border-radius:3px;font-size:13px;padding:1px 7px;font-weight:600}
+.reto{background:var(--code);color:var(--code-fg);border-radius:6px;padding:16px;min-height:86px}
+.reto b{color:#FF9AA2;display:block;font:700 13px var(--display);text-transform:uppercase;letter-spacing:.05em}
+.check{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--line)}.check input{margin-top:5px;accent-color:var(--red)}
+.nav{height:58px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:var(--panel);border-top:1px solid var(--line);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.nav select{max-width:min(46vw,420px)}
+a{color:var(--red)}
+@media (max-width:820px){.cols,.grid2,.grid3{grid-template-columns:minmax(0,1fr)}.grid4,.lvl{grid-template-columns:repeat(2,minmax(0,1fr))}.timeline{grid-template-columns:minmax(0,1fr)}.lead{font-size:18px}body{font-size:16px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.ask{align-self:flex-start;background:var(--ink);color:var(--bg);border-radius:4px;padding:8px 14px;font-weight:600}
+.src{color:var(--muted);font-size:14px}
+blockquote{margin:0;border-left:4px solid var(--red);padding:6px 14px;font:700 21px var(--display)}
+cite{display:block;font:400 14px var(--body);color:var(--muted);margin-top:4px}
+.tl,.ghtabs{display:flex;flex-wrap:wrap;gap:6px}
+button.tlb,button.ghb{background:var(--panel);color:var(--ink);border:1px solid var(--line)}
+button.tlb{font:900 20px var(--display);padding:10px 18px}
+button.tlb.on,button.ghb.on{background:var(--red);border-color:var(--red);color:var(--on-red)}
+#tlBox,#ghtBox{min-height:150px;font-size:19px}
+#tlBox h3,#ghtBox h3{font-size:24px;font-weight:900}
+.flow{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+.flow>div{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.flow b{font:900 24px var(--display);color:var(--red)}
+.zones{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr);gap:6px;align-items:stretch}
+.zones>div{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px;min-height:92px;min-width:0;display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+.zones>div.dark{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.zones>span{align-self:center;font:700 13px var(--mono);color:var(--red);text-align:center}
+.zones h3{font-size:14px}.zones i{font:400 12.5px var(--mono);background:var(--red-soft);color:var(--ink);padding:1px 6px;border-radius:3px;overflow-wrap:anywhere}
+.zones .dark i{background:#3A3436;color:#F4F1F0}.zones em{font-size:13px;color:var(--muted);font-style:normal}.zones .dark em{color:inherit;opacity:.65}
+.zones.big>div{min-height:130px;padding:16px}.zones.big h3{font-size:18px}
+pre.term{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13.5px;line-height:1.45}
+table.tight{font-size:15px}table.tight td,table.tight th{padding:4px 10px}
+pre.cc{white-space:pre-wrap}.kw2{color:var(--kw)}.st2{color:var(--str)}
+#ccOut{font-size:15px;display:flex;flex-direction:column;min-height:72px}.okk{color:var(--ok)}.koo{color:var(--red);font-weight:600}
+.gf{overflow-x:auto}.gf svg{display:block;width:100%;min-width:640px;height:auto;max-height:190px}
+.b{fill:none;stroke-width:3;stroke-linejoin:round}.bm{stroke:var(--ink)}.bd{stroke:#2F7DB8}.bf{stroke:#2E9C6A}.br{stroke:#C98A1B}.bh{stroke:var(--red)}
+.n{stroke:var(--bg);stroke-width:2}.cm{fill:var(--ink)}.cd{fill:#2F7DB8}.cf{fill:#2E9C6A}.cr{fill:#C98A1B}.ch{fill:var(--red)}
+.lb{font:600 15px var(--mono);fill:var(--ink)}.tg{font:700 14px var(--mono);fill:var(--red);text-anchor:middle}
+.small .tile{padding:9px 12px;gap:2px;font-size:15px}
+#alt{font-size:15px}#alt td,#alt th{padding:5px 10px}
+#term{height:190px;overflow-y:auto;white-space:pre-wrap}
+.p{color:var(--kw)}.cm{color:#fff;font-weight:600}.nx{color:var(--com)}
+.src-list{font-size:16px}
+@media (max-width:820px){.flow{grid-template-columns:repeat(2,minmax(0,1fr))}.zones{grid-template-columns:minmax(0,1fr)}.zones>span{transform:none}.zones>div{min-height:0}#term{height:240px}blockquote{font-size:18px}}
+</style>
+</head><body>
+<div class="bar"><b>THE BRIDGE</b><span class="sec" id="s"></span><span class="ttl" id="t"></span><span class="pos" id="p"></span></div>
+<div class="progress"><i id="pg"></i></div>
+<div class="deck" id="deck">
+<section class="slide cover" data-s="Inicio" data-t="Portada"><div class="inner">
+  <img class="cover-logo" src="data:image/png;base64,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" alt="The Bridge">
+  <div class="eyebrow">Data Science · Masterclass</div>
+  <h1>GitHub:<br>de Linus a tu push</h1>
+  <p class="lead">De dónde sale, qué alternativas hay, qué trae dentro y cómo se usa Git desde la terminal.</p>
+</div></section>
+
+<section class="slide" data-s="Inicio" data-t="Agenda"><div class="inner">
+  <div class="eyebrow">Hoy</div>
+  <h2>Cuatro bloques, de GitHub a la terminal</h2>
+  <div class="grid4">
+    <div class="tile"><div class="k">01</div><h3>Para situarnos</h3><p>De dónde vienen Git y GitHub, en un momento.</p></div>
+    <div class="tile"><div class="k">02</div><h3>Alternativas</h3><p>GitLab, Bitbucket, Codeberg, Hugging Face y compañía.</p></div>
+    <div class="tile"><div class="k">03</div><h3>Qué tiene GitHub</h3><p>Issues, pull requests, Actions, Pages y cómo usarlos.</p></div>
+    <div class="tile ink"><div class="k">04</div><h3>Git por terminal</h3><p>Commits y sus convenciones, ramas, conflictos y cómo deshacer.</p></div>
+  </div>
+  <div class="note"><b>Al terminar</b>Sabrás distinguir Git de GitHub, elegir plataforma con criterio y llevar un proyecto de tu ordenador a GitHub sin copiar y pegar comandos a ciegas.</div>
+</div></section>
+
+<section class="slide" data-s="Inicio" data-t="Git no es GitHub"><div class="inner">
+  <div class="eyebrow">Lo primero</div>
+  <h2>Git no es GitHub</h2>
+  <div class="cols">
+    <div class="tile ink"><h3>Git</h3><p>Programa que guarda la historia de tu proyecto. Funciona en tu ordenador, sin internet y sin cuenta.</p><p><strong>Es la herramienta.</strong></p></div>
+    <div class="tile"><h3>GitHub</h3><p>Plataforma web que aloja repositorios Git y añade colaboración: pull requests, issues, automatización.</p><p><strong>Es un servicio, y no el único.</strong></p></div>
+  </div>
+  <div class="note"><b>Para quedarse</b>Si GitHub desaparece mañana, tu Git sigue funcionando. Cada clon tiene la historia completa.</div>
+</div></section>
+
+<section class="slide" data-s="01 · Historia" data-t="De dónde viene"><div class="inner">
+  <div class="eyebrow">Para situarnos · pulsa cada fecha</div>
+  <h2>De una pelea de licencias a 180 millones de desarrolladores</h2>
+  <div class="tl" id="tl" role="tablist"></div>
+  <div class="tile" id="tlBox" aria-live="polite"></div>
+  <div class="grid3">
+    <div class="tile"><div class="k">+180 M</div><p>desarrolladores</p></div>
+    <div class="tile"><div class="k">630 M</div><p>repositorios</p></div>
+    <div class="tile"><div class="k">2,4 M</div><p>repositorios con notebooks de Jupyter</p></div>
+  </div>
+  <p class="src">Octoverse 2025, datos publicados por GitHub.</p>
+</div></section>
+
+<section class="slide divider" data-s="02 · Alternativas" data-t="Bloque 2: alternativas"><div class="inner">
+  <div class="num">02</div><h1>Alternativas</h1><p class="lead">Git es uno. Las casas donde guardarlo son muchas.</p>
+</div></section>
+
+<section class="slide" data-s="02 · Alternativas" data-t="Las alternativas"><div class="inner">
+  <div class="eyebrow">Alternativas · filtra según lo que necesites</div>
+  <h2>¿Qué necesitas de tu plataforma?</h2>
+  <div class="row" id="flt"></div>
+  <div class="tw"><table id="alt"></table></div>
+  <p class="src">En una empresa, la plataforma suele venir elegida. Los planes y límites cambian: mira la web de cada una antes de decidir.</p>
+</div></section>
+
+<section class="slide" data-s="02 · Alternativas" data-t="Datos y modelos"><div class="inner">
+  <div class="eyebrow">Alternativas · en data</div>
+  <h2>Git guarda código, no tus 40 GB de datos</h2>
+  <div class="grid3">
+    <div class="tile"><h3>GitHub</h3><p>Código, notebooks y documentación. Bloquea archivos de más de 100 MiB.</p></div>
+    <div class="tile"><h3>Git LFS</h3><p>Guarda los archivos pesados aparte y deja en el repo un puntero.</p></div>
+    <div class="tile"><h3>Hugging Face Hub</h3><p>Modelos y datasets en repositorios Git. Es la referencia para compartir modelos.</p></div>
+  </div>
+  <div class="note"><b>La regla</b>Código en el repo. Datos pesados y modelos en su sitio, con el enlace o el script para conseguirlos en el <code>README.md</code>.</div>
+</div></section>
+
+<section class="slide divider" data-s="03 · GitHub" data-t="Bloque 3: qué tiene GitHub"><div class="inner">
+  <div class="num">03</div><h1>Qué tiene GitHub</h1><p class="lead">Mucho más que un sitio donde subir archivos.</p>
+</div></section>
+
+<section class="slide" data-s="03 · GitHub" data-t="Un repo por dentro"><div class="inner">
+  <div class="eyebrow">Un repositorio · pulsa cada pestaña</div>
+  <h2>Las pestañas que vas a usar</h2>
+  <div class="ghtabs" id="ght" role="tablist"></div>
+  <div class="tile" id="ghtBox" aria-live="polite"></div>
+</div></section>
+
+<section class="slide" data-s="03 · GitHub" data-t="Archivos de un buen repo"><div class="inner">
+  <div class="eyebrow">Cómo usarlo · lo básico</div>
+  <h2>Un repo se juzga por su portada</h2>
+  <div class="cols">
+    <div class="stack">
+      <div class="tile"><h3><code>README.md</code></h3><p>Qué hace, cómo se ejecuta y qué resultados da.</p></div>
+      <div class="tile"><h3><code>.gitignore</code></h3><p>Lo que Git no debe seguir: datos pesados, claves, cachés.</p></div>
+      <div class="tile"><h3><code>requirements.txt</code></h3><p>Lo que hay que instalar para reproducirlo.</p></div>
+      <div class="tile"><h3><code>LICENSE</code></h3><p>Lo que otros pueden hacer con tu código. Sin licencia, no pueden reutilizarlo con garantías.</p></div>
+    </div>
+    <div class="stack">
+      <h3>Un <code>.gitignore</code> de data</h3>
+<pre># Secretos
+.env
+
+# Datos
+data/
+*.csv
+
+# Python y notebooks
+__pycache__/
+.ipynb_checkpoints/
+.venv/</pre>
+      <div class="note"><b>Si subes una clave</b>Borrarla en un commit nuevo no basta: sigue en la historia. Revócala y crea otra.</div>
+    </div>
+  </div>
+</div></section>
+
+<section class="slide" data-s="03 · GitHub" data-t="Trabajar en equipo"><div class="inner">
+  <div class="eyebrow">Cómo usarlo · en equipo</div>
+  <h2>El flujo de casi cualquier empresa</h2>
+  <div class="flow">
+    <div><b>1</b><h3>Issue</h3><p>Qué hay que hacer.</p></div>
+    <div><b>2</b><h3>Rama</h3><p>Trabajas aparte de <code>main</code>.</p></div>
+    <div><b>3</b><h3>Commits</h3><p>Cambios pequeños y con sentido.</p></div>
+    <div><b>4</b><h3>Pull request</h3><p>Pides integrar tu trabajo.</p></div>
+    <div><b>5</b><h3>Revisión</h3><p>Otra persona lee y comenta.</p></div>
+    <div><b>6</b><h3>Merge</h3><p>Entra en <code>main</code>.</p></div>
+  </div>
+  <div class="cols">
+    <div class="note"><b>La regla de oro</b><code>main</code> siempre funciona. Nadie trabaja directamente sobre ella.</div>
+    <div class="note"><b>Fork o rama</b>En tu equipo, rama. En un proyecto ajeno sin permisos de escritura, fork y pull request.</div>
+  </div>
+</div></section>
+
+<section class="slide" data-s="03 · GitHub" data-t="GitHub Actions"><div class="inner">
+  <div class="eyebrow">Cómo usarlo · automatizar</div>
+  <h2>Actions: que las pruebas se ejecuten solas</h2>
+  <div class="cols">
+    <div class="stack">
+      <p>Un archivo YAML en <code>.github/workflows/</code> dice qué ejecutar y cuándo. Este lanza las pruebas en cada push y en cada pull request.</p>
+      <ul class="clean">
+        <li>Gratis en repositorios públicos.</li>
+        <li>En privados, el plan Free incluye 2.000 minutos al mes.</li>
+        <li>Si fallan las pruebas, lo ves en la pull request antes de fusionar.</li>
+      </ul>
+      <div class="note"><b>Por qué importa en data</b>Sirve para probar pipelines y regenerar informes sin que nadie se acuerde de hacerlo.</div>
+    </div>
+<pre class="y">name: Pruebas
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: pip install -r requirements.txt
+      - run: pytest</pre>
+  </div>
+</div></section>
+
+<section class="slide" data-s="03 · GitHub" data-t="El resto de la caja"><div class="inner">
+  <div class="eyebrow">Qué más trae</div>
+  <h2>El resto de la caja de herramientas</h2>
+  <div class="grid3">
+    <div class="tile"><h3>Pages</h3><p>Publica una web estática desde un repo. Perfecto para un portfolio.</p></div>
+    <div class="tile"><h3>Codespaces</h3><p>Un entorno de desarrollo en la nube, desde el navegador.</p></div>
+    <div class="tile"><h3>Copilot</h3><p>Asistente de código con IA. La responsabilidad del código sigue siendo tuya.</p></div>
+    <div class="tile"><h3>Projects</h3><p>Tableros para organizar issues y tareas.</p></div>
+    <div class="tile"><h3>Gist</h3><p>Fragmentos de código sueltos, con versiones.</p></div>
+    <div class="tile"><h3>Dependabot</h3><p>Avisa de dependencias con vulnerabilidades y propone actualizarlas.</p></div>
+  </div>
+</div></section>
+
+<section class="slide" data-s="03 · GitHub" data-t="Tu perfil"><div class="inner">
+  <div class="eyebrow">Cómo usarlo · empleabilidad</div>
+  <h2>Tu perfil también es tu CV</h2>
+  <div class="cols">
+    <div class="stack">
+      <ul class="clean">
+        <li>Crea un repo con tu mismo nombre de usuario: su <code>README.md</code> aparece en tu perfil.</li>
+        <li>Fija tus mejores proyectos, no todos.</li>
+        <li>Cada proyecto, con un README que explique problema, datos y resultado.</li>
+        <li>Nombres claros: <code>prediccion-churn</code>, no <code>prueba_final2</code>.</li>
+      </ul>
+    </div>
+    <div class="stack">
+      <div class="note"><b>Lo que mira quien contrata</b>Tres proyectos bien contados pesan más que treinta notebooks sin explicar.</div>
+      <div class="ask">Pregunta al grupo: abre tu perfil. Si fueras a contratarte, ¿qué te falta?</div>
+    </div>
+  </div>
+</div></section>
+
+<section class="slide divider" data-s="04 · Terminal" data-t="Bloque 4: Git por terminal"><div class="inner">
+  <div class="num">04</div><h1>Git por terminal</h1><p class="lead">Cuatro zonas y un puñado de comandos.</p>
+</div></section>
+
+<section class="slide" data-s="04 · Terminal" data-t="Las cuatro zonas"><div class="inner">
+  <div class="eyebrow">Terminal · el modelo mental</div>
+  <h2>Si entiendes esto, entiendes Git</h2>
+  <div class="zones big">
+    <div><h3>Working directory</h3><p>Tus archivos, tal y como los editas.</p></div><span>git add →</span>
+    <div><h3>Staging area</h3><p>Lo que entrará en la próxima foto.</p></div><span>git commit →</span>
+    <div><h3>Repositorio local</h3><p>La historia, en tu ordenador.</p></div><span>git push →</span>
+    <div class="dark"><h3>Remoto</h3><p>GitHub, para el equipo.</p></div>
+  </div>
+  <div class="cols">
+    <div class="note"><b>¿Por qué existe staging?</b>Porque un commit debe contar una sola cosa. Puedes haber tocado cinco archivos y guardar solo dos.</div>
+    <div class="note"><b>El camino de vuelta</b><code>git pull</code> trae a tu ordenador lo que haya en el remoto. Empieza el día con él.</div>
+  </div>
+</div></section>
+
+<section class="slide" data-s="04 · Terminal" data-t="Del init al push"><div class="inner">
+  <div class="eyebrow">Terminal · paso a paso</div>
+  <h2>Un proyecto, del <code>init</code> al <code>push</code></h2>
+  <div class="zones" id="zs"></div>
+  <div class="note" id="tWhy"><b>Qué está pasando</b></div>
+  <pre class="term" id="term" tabindex="0" aria-label="Terminal"></pre>
+  <div class="row"><button id="tNext">Ejecutar</button><button class="ghost" id="tReset">Reiniciar</button><span class="src" id="tPos"></span><span class="src">Salidas reales de Git. En tu terminal, <code>push</code> mostrará además líneas de progreso.</span></div>
+</div></section>
+
+<section class="slide" data-s="04 · Terminal" data-t="Convenciones de commits"><div class="inner">
+  <div class="eyebrow">Terminal · convenciones de commits</div>
+  <h2>Un commit se escribe para quien lo lea dentro de seis meses</h2>
+  <div class="cols">
+    <div class="stack">
+<pre class="cc"><span class="kw2">tipo</span>(ámbito opcional): <span class="st2">descripción</span>
+
+cuerpo opcional: por qué se hace el cambio</pre>
+      <div class="tw"><table class="tight">
+        <tr><th>Tipo</th><th>Cuándo</th></tr>
+        <tr><td><code>feat</code></td><td>Funcionalidad nueva</td></tr>
+        <tr><td><code>fix</code></td><td>Corrección de un bug</td></tr>
+        <tr><td><code>docs</code></td><td>Solo documentación</td></tr>
+        <tr><td><code>refactor</code></td><td>Reorganiza sin cambiar el comportamiento</td></tr>
+        <tr><td><code>test</code></td><td>Añade o corrige pruebas</td></tr>
+        <tr><td><code>chore</code></td><td>Mantenimiento: dependencias, configuración</td></tr>
+      </table></div>
+    </div>
+    <div class="stack">
+      <h3>Las reglas</h3>
+      <ul class="clean">
+        <li>Un commit, un cambio lógico.</li>
+        <li>Asunto de unos 50 caracteres.</li>
+        <li>En imperativo o presente: <code>añade</code>, no <code>añadido</code>.</li>
+        <li>Sin punto final.</li>
+        <li>El equipo acuerda un idioma y lo mantiene.</li>
+      </ul>
+      <label for="ccIn"><strong>Prueba tu mensaje</strong></label>
+      <input type="text" id="ccIn" value="fix(limpieza): elimina filas con fecha nula">
+      <div id="ccOut" aria-live="polite"></div>
+    </div>
+  </div>
+  <p class="src"><code>feat</code> y <code>fix</code> son los tipos que define Conventional Commits; los demás son los habituales. Pueden cambiar según el equipo.</p>
+</div></section>
+
+<section class="slide" data-s="04 · Terminal" data-t="Antes y después"><div class="inner">
+  <div class="eyebrow">Terminal · convenciones de commits</div>
+  <h2>El mismo trabajo, dos historias</h2>
+  <div class="cols">
+    <div class="stack"><h3>Así no</h3>
+<pre class="term">a91f2c3 cambios
+7be01d4 arreglos varios
+c33a9e0 ahora sí
+08d1f77 final_v2_bueno</pre>
+      <p>Nadie sabe qué cambió ni a qué commit volver.</p></div>
+    <div class="stack"><h3>Así sí</h3>
+<pre class="term">a91f2c3 docs: añade instrucciones al README
+7be01d4 fix: corrige fechas nulas en ventas
+c33a9e0 test: añade pruebas de la limpieza
+08d1f77 feat: elimina duplicados de ventas</pre>
+      <p>La historia se lee sola y un <code>git revert</code> tiene un objetivo claro.</p></div>
+  </div>
+  <div class="note"><b>Cuando no quepa en una línea</b>Usa <code>git commit</code> sin <code>-m</code> para abrir el editor. Deja una línea en blanco tras el asunto y explica el porqué.</div>
+</div></section>
+
+<section class="slide" data-s="04 · Terminal" data-t="Ramas"><div class="inner">
+  <div class="eyebrow">Terminal · ramas</div>
+  <h2>Una rama por cambio, y vuelta a <code>main</code></h2>
+  <div class="cols">
+<pre class="term">$ git switch -c filtro-fechas
+Switched to a new branch 'filtro-fechas'
+$ git add limpieza.py
+$ git commit -m "feat: filtra ventas desde 2025"
+[filtro-fechas b37e6a8] feat: filtra ventas desde 2025
+ 1 file changed, 1 insertion(+)
+$ git switch main
+Your branch is up to date with 'origin/main'.
+Switched to branch 'main'
+$ git merge filtro-fechas
+Updating a09c967..b37e6a8
+Fast-forward
+ limpieza.py | 1 +
+ 1 file changed, 1 insertion(+)
+$ git log --oneline --graph
+* b37e6a8 feat: filtra ventas desde 2025
+* a09c967 feat: elimina duplicados de ventas
+* aedfae2 chore: crea estructura del proyecto
+$ git branch -d filtro-fechas
+Deleted branch filtro-fechas (was b37e6a8).</pre>
+    <div class="stack">
+      <ul class="clean">
+        <li><code>switch -c</code> crea la rama y se mueve a ella.</li>
+        <li>El merge se hace <strong>desde la rama que recibe</strong> los cambios.</li>
+        <li><em>Fast-forward</em>: <code>main</code> no había cambiado, así que Git solo avanza el puntero.</li>
+        <li>Una rama fusionada se puede borrar: los commits se quedan.</li>
+      </ul>
+      <div class="note"><b>En equipo</b>El merge suele hacerse en GitHub con una pull request. En local, primero subes la rama con <code>git push -u origin NOMBRE</code>.</div>
+    </div>
+  </div>
+</div></section>
+
+<section class="slide" data-s="04 · Terminal" data-t="Gitflow profesional"><div class="inner">
+  <div class="eyebrow">Terminal · ramas en una empresa</div>
+  <h2>Gitflow: una rama para cada momento de la entrega</h2>
+  <div class="gf"><svg viewBox="0 0 900 262" role="img" aria-label="Gitflow con ramas main, hotfix, release, develop y feature"><path d="M130 36 L880 36" class="b bm"/><path d="M130 186 L880 186" class="b bd"/><path d="M160 36 L200 186" class="b bd"/><path d="M170 36 L250 86 L340 86 L430 36" class="b bh"/><path d="M340 86 L480 186" class="b bh"/><path d="M260 186 L310 236 L380 236 L420 186" class="b bf"/><path d="M540 186 L590 136 L660 136 L730 36" class="b br"/><path d="M660 136 L780 186" class="b br"/><text x="4" y="41" class="lb">main</text><text x="4" y="91" class="lb">hotfix/*</text><text x="4" y="141" class="lb">release/*</text><text x="4" y="191" class="lb">develop</text><text x="4" y="241" class="lb">feature/*</text><circle cx="160" cy="36" r="8" class="n cm"/><circle cx="430" cy="36" r="8" class="n cm"/><circle cx="730" cy="36" r="8" class="n cm"/><circle cx="340" cy="86" r="8" class="n ch"/><circle cx="590" cy="136" r="8" class="n cr"/><circle cx="660" cy="136" r="8" class="n cr"/><circle cx="200" cy="186" r="8" class="n cd"/><circle cx="260" cy="186" r="8" class="n cd"/><circle cx="420" cy="186" r="8" class="n cd"/><circle cx="480" cy="186" r="8" class="n cd"/><circle cx="540" cy="186" r="8" class="n cd"/><circle cx="780" cy="186" r="8" class="n cd"/><circle cx="840" cy="186" r="8" class="n cd"/><circle cx="310" cy="236" r="8" class="n cf"/><circle cx="380" cy="236" r="8" class="n cf"/><text x="160" y="16" class="tg">v1.0.0</text><text x="430" y="16" class="tg">v1.0.1</text><text x="730" y="16" class="tg">v1.1.0</text></svg></div>
+  <div class="grid3 small">
+    <div class="tile"><h3><code>main</code></h3><p>Lo que está en producción. Cada entrega lleva un tag de versión.</p></div>
+    <div class="tile"><h3><code>develop</code></h3><p>Donde se integra el trabajo de la siguiente versión.</p></div>
+    <div class="tile"><h3><code>feature/*</code></h3><p>Sale de <code>develop</code> y vuelve a <code>develop</code>.</p></div>
+    <div class="tile"><h3><code>release/*</code></h3><p>Prepara una versión. Va a <code>main</code> y a <code>develop</code>.</p></div>
+    <div class="tile"><h3><code>hotfix/*</code></h3><p>Arregla producción. Sale de <code>main</code> y va a <code>main</code> y <code>develop</code>.</p></div>
+    <div class="tile ink"><h3>¿Cuándo?</h3><p>Software con versiones programadas. Hoy se considera un flujo clásico: muchos equipos usan otros más simples.</p></div>
+  </div>
+</div></section>
+
+<section class="slide" data-s="04 · Terminal" data-t="Nuestro flujo"><div class="inner">
+  <div class="eyebrow">Terminal · en el curso</div>
+  <h2>En el curso: <code>main</code> y ramas de trabajo</h2>
+  <div class="gf"><svg viewBox="0 0 900 220" role="img" aria-label="Ramas de trabajo que salen de main y vuelven con una pull request"><path d="M130 44 L880 44" class="b bm"/><path d="M210 44 L280 130 L390 130 L460 44" class="b bf"/><path d="M500 44 L570 190 L640 190 L710 44" class="b bh"/><text x="4" y="49" class="lb">main</text><text x="4" y="135" class="lb">feature/limpieza</text><text x="4" y="195" class="lb">fix/fechas</text><circle cx="160" cy="44" r="8" class="n cm"/><circle cx="210" cy="44" r="8" class="n cm"/><circle cx="460" cy="44" r="8" class="n cm"/><circle cx="500" cy="44" r="8" class="n cm"/><circle cx="710" cy="44" r="8" class="n cm"/><circle cx="830" cy="44" r="8" class="n cm"/><circle cx="280" cy="130" r="8" class="n cf"/><circle cx="335" cy="130" r="8" class="n cf"/><circle cx="390" cy="130" r="8" class="n cf"/><circle cx="570" cy="190" r="8" class="n ch"/><circle cx="640" cy="190" r="8" class="n ch"/><text x="460" y="20" class="tg">pull request</text><text x="710" y="20" class="tg">pull request</text></svg></div>
+  <div class="cols">
+    <div class="stack">
+      <ul class="clean">
+        <li>Sin <code>develop</code>, sin tags y sin versiones.</li>
+        <li>Una rama por tarea: <code>feature/limpieza</code>, <code>fix/fechas</code>.</li>
+        <li>Se integra con una pull request revisada por otra persona.</li>
+        <li>Tras el merge, la rama se borra.</li>
+      </ul>
+    </div>
+<pre class="term">$ git switch main
+$ git pull
+$ git switch -c feature/limpieza
+$ git add limpieza.py
+$ git commit -m "feat: elimina duplicados"
+$ git push -u origin feature/limpieza
+# Pull request y merge en GitHub
+$ git switch main
+$ git pull
+$ git branch -d feature/limpieza</pre>
+  </div>
+</div></section>
+
+<section class="slide" data-s="04 · Terminal" data-t="Conflictos"><div class="inner">
+  <div class="eyebrow">Terminal · conflictos</div>
+  <h2>Un conflicto no es un error: es una pregunta</h2>
+  <div class="cols">
+    <div class="stack">
+<pre class="term">$ git merge cambia-fecha
+Auto-merging limpieza.py
+CONFLICT (content): Merge conflict in limpieza.py
+Automatic merge failed; fix conflicts and then commit the result.</pre>
+      <p>Dos ramas tocaron la misma línea. Git no decide por ti y marca el archivo:</p>
+<pre class="term">import pandas as pd
+df = pd.read_csv("ventas.csv").drop_duplicates()
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+df = df[df["fecha"] &gt;= "2025-06-01"]
+=======
+df = df[df["fecha"] &gt;= "2024-01-01"]
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; cambia-fecha</pre>
+    </div>
+    <div class="stack">
+      <h3>Cómo resolverlo</h3>
+      <ol class="steps">
+        <li>Abre el archivo y decide qué versión se queda. Puede ser una tercera.</li>
+        <li>Borra las marcas <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code> y <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>.</li>
+        <li>Guarda y ejecuta el código.</li>
+        <li>Haz <code>git add</code> y <code>git commit</code>.</li>
+      </ol>
+<pre class="term">$ git add limpieza.py
+$ git commit -m "fix: resuelve conflicto de fechas"
+[main d782e8c] fix: resuelve conflicto de fechas</pre>
+      <div class="note"><b>¿Te has perdido?</b><code>git merge --abort</code> te devuelve a donde estabas.</div>
+    </div>
+  </div>
+</div></section>
+
+<section class="slide" data-s="04 · Terminal" data-t="Deshacer"><div class="inner">
+  <div class="eyebrow">Terminal · deshacer</div>
+  <h2>¿Te has equivocado? Depende de dónde esté el error</h2>
+  <div class="tw"><table>
+    <tr><th>Situación</th><th>Comando</th><th>Efecto</th></tr>
+    <tr><td>He editado un archivo y quiero volver atrás</td><td><code>git restore archivo</code></td><td>Pierdes esos cambios</td></tr>
+    <tr><td>Hice <code>add</code> de algo que no debía</td><td><code>git restore --staged archivo</code></td><td>Sale de staging, el cambio sigue</td></tr>
+    <tr><td>Me he equivocado en el último commit, sin push</td><td><code>git commit --amend</code></td><td>Reescribe ese commit</td></tr>
+    <tr><td>Quiero deshacer un commit ya subido</td><td><code>git revert HASH</code></td><td>Crea un commit que lo anula</td></tr>
+    <tr><td>Quiero quitar el último commit local y conservar los cambios</td><td><code>git reset --soft HEAD~1</code></td><td>El commit desaparece, los cambios quedan en staging</td></tr>
+  </table></div>
+  <div class="cols">
+    <div class="note"><b>Ya subido a una rama compartida</b>Usa <code>revert</code>: no reescribe la historia de tus compañeros.</div>
+    <div class="note"><b>Con cuidado</b><code>git reset --hard</code> y <code>git push --force</code> pueden hacer perder trabajo. Antes de usarlos, entiende qué borran.</div>
+  </div>
+</div></section>
+
+<section class="slide" data-s="04 · Terminal" data-t="Chuleta"><div class="inner">
+  <div class="eyebrow">Para llevarse</div>
+  <h2>La chuleta</h2>
+  <div class="grid3">
+    <div class="tile"><h3>Empezar</h3><p><code>git init</code></p><p><code>git clone URL</code></p><p><code>git remote add origin URL</code></p></div>
+    <div class="tile"><h3>Mirar</h3><p><code>git status</code></p><p><code>git diff</code></p><p><code>git log --oneline --graph</code></p></div>
+    <div class="tile"><h3>Guardar</h3><p><code>git add archivo</code></p><p><code>git commit -m "mensaje"</code></p></div>
+    <div class="tile"><h3>Sincronizar</h3><p><code>git pull</code></p><p><code>git push</code></p></div>
+    <div class="tile"><h3>Ramas</h3><p><code>git switch -c rama</code></p><p><code>git switch main</code></p><p><code>git merge rama</code></p></div>
+    <div class="tile ink"><h3>Ante la duda</h3><p><code>git status</code>. Lee lo que te dice: casi siempre te indica el siguiente paso.</p></div>
+  </div>
+</div></section>
+
+<section class="slide divider" data-s="Ejercicio" data-t="Ejercicio de GitHub"><div class="inner">
+  <h1>Ejercicio de GitHub</h1>
+  <p class="lead">En grupos de 3-4 personas. Cada uno lleva un cambio de la rama a <code>main</code>, y provocamos un conflicto a propósito.</p>
+</div></section>
+
+<section class="slide" data-s="Ejercicio" data-t="Prepara el repo"><div class="inner">
+  <div class="eyebrow">Ejercicio · paso 1</div>
+  <h2>Un repo para todo el grupo</h2>
+  <div class="cols">
+    <div class="stack">
+      <h3>Una persona</h3>
+      <ol class="steps">
+        <li>Crea el repo público <code>ejercicio-github</code> con README.</li>
+        <li>Añade al grupo como colaboradores.</li>
+        <li>Edita <code>README.md</code> y añade esta línea:</li>
+      </ol>
+<pre class="term">Lema: pendiente</pre>
+    </div>
+    <div class="stack">
+      <h3>Todo el grupo</h3>
+      <ol class="steps">
+        <li>Acepta la invitación.</li>
+        <li>Clona el repo y entra en la carpeta.</li>
+      </ol>
+<pre class="term">$ git clone URL_DEL_REPO
+$ cd ejercicio-github</pre>
+    </div>
+  </div>
+</div></section>
+
+<section class="slide" data-s="Ejercicio" data-t="Tu ficha"><div class="inner">
+  <div class="eyebrow">Ejercicio · paso 2 · cada persona</div>
+  <h2>Tu ficha, del issue al merge</h2>
+  <div class="cols">
+    <ol class="steps">
+      <li>Abre un issue: <code>Añadir ficha de Ana</code>. Fíjate en su número.</li>
+      <li>Crea tu rama y añade <code>equipo/ana.md</code> con tu nombre y qué esperas del bootcamp.</li>
+      <li>Haz commit y push.</li>
+      <li>Abre una pull request hacia <code>main</code>. Escribe <code>Closes #1</code> con el número de tu issue.</li>
+      <li>Otra persona revisa, comenta y aprueba.</li>
+      <li>Haz el merge y borra la rama en GitHub.</li>
+      <li>Actualiza tu <code>main</code>.</li>
+    </ol>
+<pre class="term">$ git switch main
+$ git pull
+$ git switch -c feature/ficha-ana
+$ git add equipo/ana.md
+$ git commit -m "feat: añade ficha de Ana"
+$ git push -u origin feature/ficha-ana
+# Pull request, revisión y merge en GitHub
+$ git switch main
+$ git pull
+$ git branch -d feature/ficha-ana</pre>
+  </div>
+</div></section>
+
+<section class="slide" data-s="Ejercicio" data-t="Provoca un conflicto"><div class="inner">
+  <div class="eyebrow">Ejercicio · paso 3 · dos personas</div>
+  <h2>Ahora, un conflicto a propósito</h2>
+  <div class="cols">
+    <ol class="steps">
+      <li>Cada persona crea su rama, como <code>fix/lema-ana</code> y <code>fix/lema-luis</code>.</li>
+      <li>Las dos cambian la línea <code>Lema:</code> por un lema distinto, hacen commit y push.</li>
+      <li>Abren una pull request cada una. Se fusiona solo la primera.</li>
+      <li>La segunda verá que GitHub avisa de un conflicto. Lo resuelve en local:</li>
+    </ol>
+    <div class="stack">
+<pre class="term">$ git switch main
+$ git pull
+$ git switch fix/lema-luis
+$ git merge main
+# Edita README.md y borra las marcas
+$ git add README.md
+$ git commit -m "fix: resuelve conflicto del lema"
+$ git push</pre>
+      <div class="note"><b>Después</b>La pull request se actualiza sola. Otra persona la revisa y se fusiona.</div>
+    </div>
+  </div>
+</div></section>
+
+<section class="slide" data-s="Ejercicio" data-t="Comprueba tu repo"><div class="inner">
+  <div class="eyebrow">Ejercicio · para terminar</div>
+  <h2>Comprobad que el repo cuenta la historia</h2>
+  <div class="cols">
+    <ul class="clean">
+      <li>Hay una ficha por persona en <code>equipo/</code>.</li>
+      <li>Cada issue de ficha está cerrado.</li>
+      <li>Todas las pull requests tienen una revisión de otra persona.</li>
+      <li>Los commits siguen la convención.</li>
+      <li>El lema final no tiene marcas de conflicto.</li>
+      <li>No quedan ramas de trabajo abiertas.</li>
+    </ul>
+    <div class="stack">
+<pre class="term">$ git switch main
+$ git pull
+$ git log --oneline --graph</pre>
+      <div class="ask">Pregunta al grupo: ¿qué ha sido lo más raro? ¿Y qué habría pasado sin ramas?</div>
+    </div>
+  </div>
+</div></section>
+
+<section class="slide" data-s="Cierre" data-t="Fuentes"><div class="inner">
+  <div class="eyebrow">Fuentes</div>
+  <h2>De dónde salen los datos</h2>
+  <ul class="clean src-list">
+    <li><a href="https://git-scm.com/book/en/v2/Getting-Started-A-Short-History-of-Git">Pro Git: A Short History of Git</a></li>
+    <li><a href="https://github.blog/?p=86171">GitHub Blog: Git turns 20, A Q&amp;A with Linus Torvalds</a></li>
+    <li><a href="https://en.wikipedia.org/wiki/GitHub">Wikipedia: GitHub</a></li>
+    <li><a href="https://github.blog/news-insights/octoverse/octoverse-a-new-developer-joins-github-every-second-as-ai-leads-typescript-to-1/">GitHub Octoverse 2025</a></li>
+    <li><a href="https://www.tomshardware.com/software/programming/github-folds-into-microsoft-following-ceo-resignation-once-independent-programming-site-now-part-of-coreai-team">Tom's Hardware: GitHub pasa a CoreAI</a></li>
+    <li><a href="https://blog.openreplay.com/github-alternatives-2026/">OpenReplay: Five GitHub Alternatives for 2026</a></li>
+    <li><a href="https://www.eesel.ai/en/blog/github-alternatives">eesel: GitHub alternatives</a></li>
+    <li><a href="https://ziglang.org/news/migrating-from-github-to-codeberg/">Zig: Migrating from GitHub to Codeberg</a></li>
+    <li><a href="https://huggingface.co/docs/hub/repositories">Hugging Face: Repositories</a></li>
+    <li><a href="https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow">Atlassian: Gitflow Workflow</a></li>
+    <li><a href="https://docs.github.com/en/get-started/using-github/github-flow">GitHub Docs: GitHub flow</a></li>
+    <li><a href="https://conventionalcommits.org/en/v1.0.0">Conventional Commits 1.0.0</a></li>
+    <li><a href="https://git-scm.com/book/en/v2/Distributed-Git-Contributing-to-a-Project">Pro Git: Contributing to a Project</a></li>
+    <li><a href="https://capitalandcompute.net/blog/github-pricing-plans-cost/">Capital &amp; Compute: GitHub pricing</a></li>
+  </ul>
+</div></section>
+
+<section class="slide cover" data-s="Cierre" data-t="Cierre"><div class="inner" style="align-items:center;text-align:center">
+  <img class="cover-logo" src="data:image/png;base64,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" alt="The Bridge" style="width:300px">
+  <h1>A hacer push</h1>
+</div></section>
+
+</div>
+<div class="nav"><button class="ghost" id="prev">Anterior</button><select id="jump" aria-label="Ir a"></select><button id="next">Siguiente</button></div>
+<script type="application/json" id="trans">[{"cmd": "git init -b main analisis-ventas", "out": "Initialized empty Git repository in ~/analisis-ventas/.git/", "why": "Crea un repositorio vacío. Git añade una carpeta oculta, .git, donde guarda toda la historia.", "z": {"w": [], "s": [], "l": [], "r": []}}, {"cmd": "git status", "out": "On branch main\n\nNo commits yet\n\nUntracked files:\n  (use \"git add <file>...\" to include in what will be committed)\n\tREADME.md\n\tlimpieza.py\n\nnothing added to commit but untracked files present (use \"git add\" to track)", "why": "Hemos creado dos archivos. Git los ve, pero aún no los sigue.", "z": {"w": ["README.md", "limpieza.py"], "s": [], "l": [], "r": []}}, {"cmd": "git add README.md limpieza.py", "out": "", "why": "Preparamos lo que entrará en el siguiente commit.", "z": {"w": [], "s": ["README.md", "limpieza.py"], "l": [], "r": []}}, {"cmd": "git status", "out": "On branch main\n\nNo commits yet\n\nChanges to be committed:\n  (use \"git rm --cached <file>...\" to unstage)\n\tnew file:   README.md\n\tnew file:   limpieza.py", "why": "Los dos archivos están en el staging area.", "z": {"w": [], "s": ["README.md", "limpieza.py"], "l": [], "r": []}}, {"cmd": "git commit -m \"chore: crea estructura del proyecto\"", "out": "[main (root-commit) aedfae2] chore: crea estructura del proyecto\n 2 files changed, 2 insertions(+)\n create mode 100644 README.md\n create mode 100644 limpieza.py", "why": "La foto queda guardada en tu ordenador. GitHub aún no sabe nada.", "z": {"w": [], "s": [], "l": ["chore: estructura"], "r": []}}, {"cmd": "git remote add origin https://github.com/ana/analisis-ventas.git", "out": "", "why": "Conectamos el repo local con el de GitHub. No muestra nada: si no hay error, ha ido bien.", "z": {"w": [], "s": [], "l": ["chore: estructura"], "r": []}}, {"cmd": "git push -u origin main", "out": "branch 'main' set up to track 'origin/main'.\nTo https://github.com/ana/analisis-ventas.git\n * [new branch]      main -> main", "why": "Subimos los commits. -u recuerda la conexión para que luego baste con git push.", "z": {"w": [], "s": [], "l": ["chore: estructura"], "r": ["chore: estructura"]}}, {"cmd": "git status", "out": "On branch main\nYour branch is up to date with 'origin/main'.\n\nChanges not staged for commit:\n  (use \"git add <file>...\" to update what will be committed)\n  (use \"git restore <file>...\" to discard changes in working directory)\n\tmodified:   limpieza.py\n\nno changes added to commit (use \"git add\" and/or \"git commit -a\")", "why": "Editamos limpieza.py. Git detecta el cambio y nos da pistas de qué hacer.", "z": {"w": ["limpieza.py"], "s": [], "l": ["chore: estructura"], "r": ["chore: estructura"]}}, {"cmd": "git diff", "out": "diff --git a/limpieza.py b/limpieza.py\nindex ffd919b..83de124 100644\n--- a/limpieza.py\n+++ b/limpieza.py\n@@ -1 +1,2 @@\n import pandas as pd\n+df = pd.read_csv(\"ventas.csv\").drop_duplicates()", "why": "Antes de añadir nada, miramos qué ha cambiado exactamente.", "z": {"w": ["limpieza.py"], "s": [], "l": ["chore: estructura"], "r": ["chore: estructura"]}}, {"cmd": "git add limpieza.py", "out": "", "why": "Lo pasamos al staging area.", "z": {"w": [], "s": ["limpieza.py"], "l": ["chore: estructura"], "r": ["chore: estructura"]}}, {"cmd": "git commit -m \"feat: elimina duplicados de ventas\"", "out": "[main a09c967] feat: elimina duplicados de ventas\n 1 file changed, 1 insertion(+)", "why": "Segundo commit, solo en local.", "z": {"w": [], "s": [], "l": ["chore: estructura", "feat: duplicados"], "r": ["chore: estructura"]}}, {"cmd": "git push", "out": "To https://github.com/ana/analisis-ventas.git\n   aedfae2..a09c967  main -> main", "why": "GitHub se pone al día. Las dos historias vuelven a coincidir.", "z": {"w": [], "s": [], "l": ["chore: estructura", "feat: duplicados"], "r": ["chore: estructura", "feat: duplicados"]}}, {"cmd": "git log --oneline", "out": "a09c967 feat: elimina duplicados de ventas\naedfae2 chore: crea estructura del proyecto", "why": "La historia del proyecto, del commit más reciente al primero.", "z": {"w": [], "s": [], "l": ["chore: estructura", "feat: duplicados"], "r": ["chore: estructura", "feat: duplicados"]}}]</script>
+<script>(function(){
+var $=function(i){return document.getElementById(i)};
+function esc(t){return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+/* deck */
+var slides=[].slice.call(document.querySelectorAll(".slide")),cur=0;
+slides.forEach(function(s,i){var o=document.createElement("option");o.value=i;o.textContent=(i+1)+". "+s.dataset.t;$("jump").appendChild(o)});
+function go(i){cur=Math.max(0,Math.min(slides.length-1,i));slides.forEach(function(s,j){s.classList.toggle("on",j===cur)});
+  var s=slides[cur];s.scrollTop=0;$("s").textContent=s.dataset.s;$("t").textContent=s.dataset.t;$("p").textContent=(cur+1)+" / "+slides.length;
+  $("pg").style.width=((cur+1)/slides.length*100)+"%";$("jump").value=cur;$("prev").disabled=cur===0;$("next").disabled=cur===slides.length-1;
+  try{localStorage.setItem("mc-github-slide",cur)}catch(e){}}
+$("prev").onclick=function(){go(cur-1)};$("next").onclick=function(){go(cur+1)};$("jump").onchange=function(){go(+this.value)};
+document.addEventListener("keydown",function(e){if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;if(e.key==="ArrowRight"||e.key==="PageDown")go(cur+1);if(e.key==="ArrowLeft"||e.key==="PageUp")go(cur-1)});
+/* selector de pestañas genérico */
+function tabs(host,box,items,cls){items.forEach(function(it,i){var b=document.createElement("button");b.className=cls;b.textContent=it[0];b.setAttribute("role","tab");
+  b.onclick=function(){[].forEach.call($(host).children,function(c){c.classList.remove("on")});b.classList.add("on");$(box).innerHTML="<h3>"+it[1]+"</h3><p>"+it[2]+"</p>"};$(host).appendChild(b);if(i===0)b.click()})}
+tabs("tl","tlBox",[
+["2005","Nace Git","El kernel de Linux pierde el uso gratuito de BitKeeper. Linus Torvalds escribe Git: en unos 10 días ya puede usarlo. Primer commit, el 7 de abril."],
+["2008","Nace GitHub","Tom Preston-Werner, Chris Wanstrath, P. J. Hyett y Scott Chacon lanzan una web para alojar y compartir repositorios Git."],
+["2018","Microsoft compra GitHub","Por 7.500 millones de dólares. Parte de la comunidad desconfía por el historial de Microsoft con el software libre."],
+["2019","Privado gratis y Actions","Llegan los repos privados gratuitos y GitHub Actions. En 2020, el plan gratuito admite colaboradores ilimitados."],
+["2021","Copilot","Vista previa del asistente de código con IA, basado en el modelo Codex de OpenAI."],
+["2025","Dentro de Microsoft","El CEO anuncia su salida y GitHub se integra en CoreAI, el equipo de IA de Microsoft."]
+],"tlb");
+tabs("ght","ghtBox",[
+["Code","Code: el proyecto","Archivos, historial, ramas y README. El botón <strong>Code</strong> te da la URL para clonar."],
+["Issues","Issues: la lista de trabajo","Tareas, bugs e ideas, con comentarios, etiquetas y responsables. Con <code>Closes #12</code> en una pull request, el issue se cierra al fusionar."],
+["Pull requests","Pull requests: la revisión","Propones integrar una rama. Se revisa línea a línea, se comenta y se fusiona."],
+["Actions","Actions: la automatización","Ejecuta pruebas, despliegues o scripts cuando pasa algo en el repo."],
+["Projects","Projects: la organización","Tableros y tablas sobre tus issues y pull requests."],
+["Security","Security: los avisos","Alertas de dependencias vulnerables y de secretos."],
+["Insights","Insights: los números","Quién contribuye, cuánto y cuándo."],
+["Settings","Settings: la configuración","Colaboradores, ramas protegidas, secretos y visibilidad. Visible si tienes permisos de administración."]
+],"ghb");
+/* alternativas */
+var ALT=[
+["GitHub","Microsoft","Comunidad, open source y portfolio","Enterprise Server, de pago",["com","emp"]],
+["GitLab","GitLab Inc. (open core)","Plataforma DevOps todo en uno con CI/CD","Sí",["self","emp"]],
+["Bitbucket","Atlassian","Integración con Jira y Confluence","Data Center, de pago",["emp"]],
+["Azure Repos","Microsoft","Encaja con Azure DevOps y Pipelines","Azure DevOps Server",["emp"]],
+["Codeberg","Asociación alemana sin ánimo de lucro","Software libre, financiado con donaciones","No aplica: usa Forgejo",["libre","com"]],
+["Forgejo / Gitea","Comunidad / Gitea Ltd.","Ligeros y fáciles de instalar","Sí",["self","libre"]],
+["Hugging Face Hub","Hugging Face","Modelos y datasets de IA","No",["data","com"]],
+["SourceHut","Empresa pequeña","Flujo por correo, minimalista","Sí",["self","libre"]],
+["Radicle","Protocolo, sin empresa central","Git peer-to-peer, sin servidor central","Cada nodo es tuyo",["self","libre"]]];
+var F=[["todas","Todas"],["com","Comunidad"],["emp","Empresa"],["self","Autoalojar"],["libre","Software libre"],["data","Data e IA"]];
+function pAlt(f){var h="<tr><th>Plataforma</th><th>Quién está detrás</th><th>Destaca por</th><th>¿Autoalojar?</th></tr>";
+  ALT.forEach(function(a){if(f==="todas"||a[4].indexOf(f)>=0)h+="<tr><td><strong>"+a[0]+"</strong></td><td>"+a[1]+"</td><td>"+a[2]+"</td><td>"+a[3]+"</td></tr>"});$("alt").innerHTML=h}
+F.forEach(function(x,i){var b=document.createElement("button");b.className="ghb";b.textContent=x[1];b.onclick=function(){[].forEach.call($("flt").children,function(c){c.classList.remove("on")});b.classList.add("on");pAlt(x[0])};$("flt").appendChild(b);if(!i)b.click()});
+/* terminal */
+var ST=JSON.parse($("trans").textContent),n=0;
+function chips(a){return a.map(function(x){return "<i>"+esc(x)+"</i>"}).join("")||"<em>vacío</em>"}
+function zonas(z){var L=[["w","Working directory"],["s","Staging area"],["l","Repositorio local"],["r","GitHub"]],h="";
+  L.forEach(function(p,i){h+='<div class="'+(p[0]==="r"?"dark":"")+'"><h3>'+p[1]+"</h3>"+chips(z[p[0]])+"</div>";if(i<3)h+="<span>→</span>"});$("zs").innerHTML=h}
+function pinta(){var t=$("term"),h="";
+  for(var i=0;i<n;i++){h+='<span class="p">$ </span><span class="cm">'+esc(ST[i].cmd)+"</span>\n"+(ST[i].out?esc(ST[i].out)+"\n":"")+"\n"}
+  if(n<ST.length)h+='<span class="p">$ </span><span class="nx">'+esc(ST[n].cmd)+"</span>";
+  t.innerHTML=h;t.scrollTop=t.scrollHeight;
+  zonas(n?ST[n-1].z:{w:[],s:[],l:[],r:[]});
+  $("tWhy").innerHTML="<b>Qué está pasando</b>"+(n?esc(ST[n-1].why):"Pulsa Ejecutar para lanzar cada comando y mira cómo se mueven los archivos.");
+  $("tPos").textContent=n+" de "+ST.length;$("tNext").disabled=n>=ST.length}
+$("tNext").onclick=function(){if(n<ST.length){n++;pinta()}};$("tReset").onclick=function(){n=0;pinta()};pinta();
+/* comprobador de commits */
+var TIPOS=["feat","fix","docs","style","refactor","perf","test","build","ci","chore","revert"];
+function revisa(m){m=m.trim();var r=[],x=m.match(/^([a-z]+)(\([^)\s]+\))?(!)?: (.+)$/);
+  if(!x)return [[0,"Falta el formato tipo: descripción."]];
+  r.push(TIPOS.indexOf(x[1])>=0?[1,"Tipo reconocido: "+x[1]+"."]:[0,"Tipo poco habitual: "+x[1]+"."]);
+  r.push(m.length<=72?[1,m.length+" caracteres"+(m.length>50?": algo largo, intenta acercarte a 50.":"."),m.length<=50]:[0,m.length+" caracteres: demasiado largo."]);
+  r.push(/[.]$/.test(m)?[0,"Quita el punto final."]:[1,"Sin punto final."]);
+  if(/^(añadido|arreglado|corregido|cambiado|cambios|arreglos|actualizado|eliminado)\b/i.test(x[4]))r.push([0,"Usa el imperativo o el presente: dice qué hace el commit."]);
+  return r}
+function ccPinta(){$("ccOut").innerHTML=revisa($("ccIn").value).map(function(v){return '<div class="'+(v[0]?"okk":"koo")+'">'+(v[0]?"✓ ":"✗ ")+esc(v[1])+"</div>"}).join("")}
+$("ccIn").addEventListener("input",ccPinta);ccPinta();
+/* resaltado yaml y comentarios */
+[].forEach.call(document.querySelectorAll("pre.term"),function(p){if(p.id)return;p.innerHTML=p.innerHTML.replace(/^(\$ )(.*)$/gm,'<span class="p">$1</span><span class="cm">$2</span>')});
+var s0=0;try{s0=+localStorage.getItem("mc-github-slide")||0}catch(e){}
+go(s0<slides.length?s0:0);
+})();
+</script>
+
+</body></html>
