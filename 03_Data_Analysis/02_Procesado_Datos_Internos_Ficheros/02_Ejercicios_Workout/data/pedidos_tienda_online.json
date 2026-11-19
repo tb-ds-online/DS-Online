@@ -1,0 +1,169 @@
+[
+  {
+    "id_pedido": 1001,
+    "fecha": "2025-03-03T11:15:00",
+    "cliente": {
+      "id": "C004",
+      "nombre": "Jorge Sanz",
+      "ciudad": "Madrid"
+    },
+    "lineas": [
+      {
+        "sku": "SKU-02",
+        "producto": "Ratón",
+        "unidades": 1,
+        "precio": 19.5
+      },
+      {
+        "sku": "SKU-03",
+        "producto": "Monitor 27\"",
+        "unidades": 3,
+        "precio": 229.0
+      }
+    ]
+  },
+  {
+    "id_pedido": 1002,
+    "fecha": "2025-03-06T12:15:00",
+    "cliente": {
+      "id": "C002",
+      "nombre": "Pablo Gómez",
+      "ciudad": "Bilbao"
+    },
+    "lineas": [
+      {
+        "sku": "SKU-04",
+        "producto": "Webcam",
+        "unidades": 2,
+        "precio": 49.99
+      }
+    ]
+  },
+  {
+    "id_pedido": 1003,
+    "fecha": "2025-03-09T13:15:00",
+    "cliente": {
+      "id": "C004",
+      "nombre": "Jorge Sanz",
+      "ciudad": "Madrid"
+    },
+    "lineas": [
+      {
+        "sku": "SKU-01",
+        "producto": "Teclado",
+        "unidades": 3,
+        "precio": 39.9
+      }
+    ]
+  },
+  {
+    "id_pedido": 1004,
+    "fecha": "2025-03-12T14:15:00",
+    "cliente": {
+      "id": "C001",
+      "nombre": "Lucía Martín",
+      "ciudad": "Sevilla"
+    },
+    "lineas": [
+      {
+        "sku": "SKU-04",
+        "producto": "Webcam",
+        "unidades": 2,
+        "precio": 49.99
+      },
+      {
+        "sku": "SKU-02",
+        "producto": "Ratón",
+        "unidades": 3,
+        "precio": 19.5
+      }
+    ]
+  },
+  {
+    "id_pedido": 1005,
+    "fecha": "2025-03-15T15:15:00",
+    "cliente": {
+      "id": "C002",
+      "nombre": "Pablo Gómez",
+      "ciudad": "Bilbao"
+    },
+    "lineas": [
+      {
+        "sku": "SKU-01",
+        "producto": "Teclado",
+        "unidades": 3,
+        "precio": 39.9
+      },
+      {
+        "sku": "SKU-04",
+        "producto": "Webcam",
+        "unidades": 2,
+        "precio": 49.99
+      },
+      {
+        "sku": "SKU-02",
+        "producto": "Ratón",
+        "unidades": 1,
+        "precio": 19.5
+      }
+    ],
+    "cupon": "PRIMAVERA10"
+  },
+  {
+    "id_pedido": 1006,
+    "fecha": "2025-03-18T16:15:00",
+    "cliente": {
+      "id": "C004",
+      "nombre": "Jorge Sanz",
+      "ciudad": "Madrid"
+    },
+    "lineas": [
+      {
+        "sku": "SKU-02",
+        "producto": "Ratón",
+        "unidades": 3,
+        "precio": 19.5
+      }
+    ]
+  },
+  {
+    "id_pedido": 1007,
+    "fecha": "2025-03-21T17:15:00",
+    "cliente": {
+      "id": "C003",
+      "nombre": "Ana Ruiz",
+      "ciudad": "Valencia"
+    },
+    "lineas": [
+      {
+        "sku": "SKU-04",
+        "producto": "Webcam",
+        "unidades": 1,
+        "precio": 49.99
+      }
+    ]
+  },
+  {
+    "id_pedido": 1008,
+    "fecha": "2025-03-24T18:15:00",
+    "cliente": {
+      "id": "C001",
+      "nombre": "Lucía Martín",
+      "ciudad": "Sevilla"
+    },
+    "lineas": [
+      {
+        "sku": "SKU-02",
+        "producto": "Ratón",
+        "unidades": 2,
+        "precio": 19.5
+      },
+      {
+        "sku": "SKU-01",
+        "producto": "Teclado",
+        "unidades": 3,
+        "precio": 39.9
+      }
+    ]
+  }
+]
